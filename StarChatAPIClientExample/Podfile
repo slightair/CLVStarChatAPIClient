@@ -1,0 +1,6 @@
+platform :ios
+
+dependency 'SBJson'
+dependency 'AFNetworking'
+dependency 'GHUnitIOS'
+dependency 'NLTHTTPStubServer'
