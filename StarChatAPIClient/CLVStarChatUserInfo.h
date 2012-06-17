@@ -10,8 +10,11 @@
 
 @interface CLVStarChatUserInfo : NSObject
 
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *nick;
-@property (nonatomic, strong) NSArray *keywords;
++ (id)userInfoWithDictionary:(NSDictionary *)dictionary;
+- (id)initWithDictionary:(NSDictionary *)dictionary;
+
+@property (nonatomic, readonly, strong) NSString *name;
+@property (nonatomic, readonly, strong) NSString *nick;
+@property (nonatomic, readonly, strong) NSArray *keywords;
 
 @end

@@ -25,6 +25,12 @@
 		575B72B21586FD6600470D1C /* CLVAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72B11586FD6600470D1C /* CLVAppDelegate.m */; };
 		575B72C01586FDF800470D1C /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */; };
 		57F392DA158E029F00B71B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392D9158E029F00B71B9A /* main.m */; };
+		57F392DE158E05A300B71B9A /* CLVStarChatUserInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */; };
+		57F392DF158E0E3E00B71B9A /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */; };
+		57F392E0158E0E3E00B71B9A /* CLVStarChatUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538493158C69B8006C9902 /* CLVStarChatUserInfo.m */; };
+		57F392E1158E0E3E00B71B9A /* CLVStarChatChannelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538497158C69D4006C9902 /* CLVStarChatChannelInfo.m */; };
+		57F392E2158E0E3E00B71B9A /* CLVStarChatTopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849A158C6EA1006C9902 /* CLVStarChatTopicInfo.m */; };
+		57F392E3158E0E3E00B71B9A /* CLVStarChatMessageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849D158C7373006C9902 /* CLVStarChatMessageInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +60,8 @@
 		575B72BE1586FDF800470D1C /* CLVStarChatAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatAPIClient.h; path = ../StarChatAPIClient/CLVStarChatAPIClient.h; sourceTree = "<group>"; };
 		575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatAPIClient.m; path = ../StarChatAPIClient/CLVStarChatAPIClient.m; sourceTree = "<group>"; };
 		57F392D9158E029F00B71B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		57F392DC158E05A300B71B9A /* CLVStarChatUserInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLVStarChatUserInfoTest.h; sourceTree = "<group>"; };
+		57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLVStarChatUserInfoTest.m; sourceTree = "<group>"; };
 		76A4D6CCF628474498CA36EF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -87,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				575384D1158CE10C006C9902 /* Supporting Files */,
+				57F392DC158E05A300B71B9A /* CLVStarChatUserInfoTest.h */,
+				57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */,
 			);
 			path = StarChatAPIClientExampleTests;
 			sourceTree = "<group>";
@@ -279,6 +289,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				57F392DA158E029F00B71B9A /* main.m in Sources */,
+				57F392DF158E0E3E00B71B9A /* CLVStarChatAPIClient.m in Sources */,
+				57F392E0158E0E3E00B71B9A /* CLVStarChatUserInfo.m in Sources */,
+				57F392E1158E0E3E00B71B9A /* CLVStarChatChannelInfo.m in Sources */,
+				57F392E2158E0E3E00B71B9A /* CLVStarChatTopicInfo.m in Sources */,
+				57F392E3158E0E3E00B71B9A /* CLVStarChatMessageInfo.m in Sources */,
+				57F392DE158E05A300B71B9A /* CLVStarChatUserInfoTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +340,17 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "StarChatAPIClientExampleTests/StarChatAPIClientExampleTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/Headers\"",
+					"$(SDKROOT)/usr/include/libxml2",
+					"\"$(PODS_ROOT)/Headers/AFNetworking\"",
+					"\"$(PODS_ROOT)/Headers/CocoaAsyncSocket\"",
+					"\"$(PODS_ROOT)/Headers/CocoaHTTPServer\"",
+					"\"$(PODS_ROOT)/Headers/CocoaLumberjack\"",
+					"\"$(PODS_ROOT)/Headers/GHUnitIOS\"",
+					"\"$(PODS_ROOT)/Headers/NLTHTTPStubServer\"",
+					"\"$(PODS_ROOT)/Headers/SBJson\"",
+				);
 				INFOPLIST_FILE = "StarChatAPIClientExampleTests/StarChatAPIClientExampleTests-Info.plist";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -342,7 +369,9 @@
 					"-framework",
 					CoreLocation,
 				);
+				PODS_ROOT = "$(SRCROOT)/Pods";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -353,6 +382,17 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "StarChatAPIClientExampleTests/StarChatAPIClientExampleTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/Headers\"",
+					"$(SDKROOT)/usr/include/libxml2",
+					"\"$(PODS_ROOT)/Headers/AFNetworking\"",
+					"\"$(PODS_ROOT)/Headers/CocoaAsyncSocket\"",
+					"\"$(PODS_ROOT)/Headers/CocoaHTTPServer\"",
+					"\"$(PODS_ROOT)/Headers/CocoaLumberjack\"",
+					"\"$(PODS_ROOT)/Headers/GHUnitIOS\"",
+					"\"$(PODS_ROOT)/Headers/NLTHTTPStubServer\"",
+					"\"$(PODS_ROOT)/Headers/SBJson\"",
+				);
 				INFOPLIST_FILE = "StarChatAPIClientExampleTests/StarChatAPIClientExampleTests-Info.plist";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -371,7 +411,9 @@
 					"-framework",
 					CoreLocation,
 				);
+				PODS_ROOT = "$(SRCROOT)/Pods";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
