@@ -8,11 +8,34 @@
 
 #import "CLVStarChatChannelInfo.h"
 
+@interface CLVStarChatChannelInfo ()
+
+@property (nonatomic, readwrite, strong) NSString *name;
+@property (nonatomic, readwrite, strong) NSString *privacy;
+@property (nonatomic, readwrite) NSInteger numUsers;
+@property (nonatomic, readwrite, strong) CLVStarChatTopicInfo *topic;
+
+@end
+
 @implementation CLVStarChatChannelInfo
 
 @synthesize name = _name;
 @synthesize privacy = _privacy;
 @synthesize numUsers = _numUsers;
 @synthesize topic = _topic;
+
++ (id)channelInfoWithDictionary:(NSDictionary *)dictionary
+{
+    return [[[self class] alloc] initWithDictionary:dictionary];
+}
+
+- (id)initWithDictionary:(NSDictionary *)dictionary
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
 
 @end

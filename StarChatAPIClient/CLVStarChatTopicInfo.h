@@ -10,9 +10,13 @@
 
 @interface CLVStarChatTopicInfo : NSObject
 
-@property (nonatomic, strong) NSString *channelName;
-@property (nonatomic, strong) NSString *body;
-@property (nonatomic) NSInteger createdAt;
-@property (nonatomic, strong) NSString *userName;
++ (id)topicInfoWithDictionary:(NSDictionary *)dictionary;
+- (id)initWithDictionary:(NSDictionary *)dictionary;
+
+@property (nonatomic, readonly) NSInteger topicId;
+@property (nonatomic, readonly, strong) NSString *channelName;
+@property (nonatomic, readonly, strong) NSString *body;
+@property (nonatomic, readonly, strong) NSDate *createdAt;
+@property (nonatomic, readonly, strong) NSString *userName;
 
 @end
