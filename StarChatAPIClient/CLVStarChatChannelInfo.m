@@ -33,7 +33,10 @@
 {
     self = [super init];
     if (self) {
-        
+        self.name = [dictionary objectForKey:@"name"];
+        self.privacy = [dictionary objectForKey:@"privacy"];
+        self.numUsers = [[dictionary objectForKey:@"user_num"] integerValue];
+        self.topic = [CLVStarChatTopicInfo topicInfoWithDictionary:[dictionary objectForKey:@"topic"]];
     }
     return self;
 }

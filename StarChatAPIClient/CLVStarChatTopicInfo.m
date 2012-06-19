@@ -35,7 +35,11 @@
 {
     self = [super init];
     if (self) {
-        
+        self.topicId = [[dictionary objectForKey:@"id"] integerValue];
+        self.channelName = [dictionary objectForKey:@"channel_name"];
+        self.body = [dictionary objectForKey:@"body"];
+        self.createdAt = [NSDate dateWithTimeIntervalSince1970:[[dictionary objectForKey:@"created_at"] integerValue]];
+        self.userName = [dictionary objectForKey:@"user_name"];
     }
     return self;
 }

@@ -31,7 +31,9 @@
 {
     self = [super init];
     if (self) {
-        
+        self.name = [dictionary objectForKey:@"name"];
+        self.nick = [dictionary objectForKey:@"nick"];
+        self.keywords = [dictionary objectForKey:@"keywords"];
     }
     return self;
 }

@@ -37,7 +37,12 @@
 {
     self = [super init];
     if (self) {
-        
+        self.messageId = [[dictionary objectForKey:@"id"] integerValue];
+        self.userName = [dictionary objectForKey:@"user_name"];
+        self.body = [dictionary objectForKey:@"body"];
+        self.createdAt = [NSDate dateWithTimeIntervalSince1970:[[dictionary objectForKey:@"created_at"] integerValue]];
+        self.channelName = [dictionary objectForKey:@"channel_name"];
+        self.isNotice = [[dictionary objectForKey:@"notice"] boolValue];
     }
     return self;
 }

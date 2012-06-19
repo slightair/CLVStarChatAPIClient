@@ -14,7 +14,7 @@
 
 - (void)testInitWithDictionary
 {
-    NSString *userInfoJSON = @"{name: \"michael\",  nick: \"MJ\", keywords: [\"michael\", \"Michael\", \"FYI\"]}";
+    NSString *userInfoJSON = @"{\"name\": \"michael\",  \"nick\": \"MJ\", \"keywords\": [\"michael\", \"Michael\", \"FYI\"]}";
     NSDictionary *userInfoDict = [userInfoJSON JSONValue];
     
     CLVStarChatUserInfo *userInfo = [CLVStarChatUserInfo userInfoWithDictionary:userInfoDict];
