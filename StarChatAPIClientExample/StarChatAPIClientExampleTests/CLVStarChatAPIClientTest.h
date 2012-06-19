@@ -8,6 +8,6 @@
 
 #import "GHUnit.h"
 
-@interface CLVStarChatAPIClientTest : GHTestCase
+@interface CLVStarChatAPIClientTest : GHAsyncTestCase
 
 @end

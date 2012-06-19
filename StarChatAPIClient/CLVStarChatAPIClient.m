@@ -8,14 +8,40 @@
 
 #import "CLVStarChatAPIClient.h"
 
+@interface CLVStarChatAPIClient ()
+
+@property (nonatomic, readwrite, strong) NSString *userName;
+
+@end
+
 @implementation CLVStarChatAPIClient
+
+@synthesize userName = _userName;
+
+- (void)setAuthorizationHeaderWithUsername:(NSString *)username password:(NSString *)password
+{
+    self.userName = username;
+    [super setAuthorizationHeaderWithUsername:username password:password];
+}
 
 // GET /users/user_name
 - (void)userInfoForName:(NSString *)userName
-             completion:(void (^)(AFHTTPRequestOperation *operation, CLVStarChatUserInfo *userInfo))completion
+             completion:(void (^)(CLVStarChatUserInfo *userInfo))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@", userName]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            CLVStarChatUserInfo *userInfo = [CLVStarChatUserInfo userInfoWithDictionary:JSON];
+            completion(userInfo);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // PUT /users/user_name
@@ -30,11 +56,26 @@
 - (void)sendPing:(CLVStarChatAPIBasicSuccessBlock)completion
          failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@/ping", self.userName]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            if (![[JSON objectForKey:@"result"] isEqualToString:@"pong"]) {
+                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnknown userInfo:JSON];
+                failure(error);
+            }
+            completion();
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // GET /users/user_name/channels
-- (void)subscribedChannels:(void (^)(AFHTTPRequestOperation *operation, NSArray *channels))completion
+- (void)subscribedChannels:(void (^)(NSArray *channels))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
     
@@ -42,7 +83,7 @@
 
 // GET /channels/channel_name
 - (void)channelInfoForName:(NSString *)channelName
-                completion:(void (^)(AFHTTPRequestOperation *operation, CLVStarChatChannelInfo *channelInfo))completion
+                completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
     
@@ -58,7 +99,7 @@
 
 // GET /channels/channel_name/users
 - (void)usersForChannel:(NSString *)channelName
-             completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *users))completion
+             completion:(void (^)(NSArray *users))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 {
     
@@ -66,7 +107,7 @@
 
 // GET /channels/channel_name/messages/recent
 - (void)recentMessagesForChannel:(NSString *)channelName
-                      completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *messages))completion
+                      completion:(void (^)(NSArray *messages))completion
                          failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
     
@@ -76,7 +117,7 @@
 - (void)messagesForChannel:(NSString *)channelName
                  startTime:(NSInteger)startTime
                    endTime:(NSInteger)endTime
-                completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *messages))completion
+                completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
     

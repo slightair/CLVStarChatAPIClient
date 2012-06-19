@@ -6,19 +6,25 @@
 //  Copyright (c) 2012 slightair. All rights reserved.
 //
 
+#define CLVStarChatAPIErrorDomain @"CLVStarChatAPIError"
+
 #import "AFNetworking.h"
 #import "CLVStarChatUserInfo.h"
 #import "CLVStarChatChannelInfo.h"
 #import "CLVStarChatTopicInfo.h"
 
+enum CLVStarChatAPIErrors {
+    CLVStarChatAPIErrorUnknown = -1
+};
+
 @interface CLVStarChatAPIClient : AFHTTPClient
 
-typedef void (^CLVStarChatAPIBasicSuccessBlock)(AFHTTPRequestOperation *operation);
-typedef void (^CLVStarChatAPIBasicFailureBlock)(AFHTTPRequestOperation *operation, NSError *error);
+typedef void (^CLVStarChatAPIBasicSuccessBlock)();
+typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
 
 // GET /users/user_name
 - (void)userInfoForName:(NSString *)userName
-             completion:(void (^)(AFHTTPRequestOperation *operation, CLVStarChatUserInfo *userInfo))completion
+             completion:(void (^)(CLVStarChatUserInfo *userInfo))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // PUT /users/user_name
@@ -31,12 +37,12 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(AFHTTPRequestOperation *operatio
          failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // GET /users/user_name/channels
-- (void)subscribedChannels:(void (^)(AFHTTPRequestOperation *operation, NSArray *channels))completion
+- (void)subscribedChannels:(void (^)(NSArray *channels))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // GET /channels/channel_name
 - (void)channelInfoForName:(NSString *)channelName
-                completion:(void (^)(AFHTTPRequestOperation *operation, CLVStarChatChannelInfo *channelInfo))completion
+                completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // PUT /channels/channel_name
@@ -46,19 +52,19 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(AFHTTPRequestOperation *operatio
 
 // GET /channels/channel_name/users
 - (void)usersForChannel:(NSString *)channelName
-             completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *users))completion
+             completion:(void (^)(NSArray *users))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // GET /channels/channel_name/messages/recent
 - (void)recentMessagesForChannel:(NSString *)channelName
-                      completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *messages))completion
+                      completion:(void (^)(NSArray *messages))completion
                          failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
 - (void)messagesForChannel:(NSString *)channelName
                  startTime:(NSInteger)startTime
                    endTime:(NSInteger)endTime
-                completion:(void (^)(AFHTTPRequestOperation *operation, NSArray *messages))completion
+                completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // POST /channels/channel_name/messages
