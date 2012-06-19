@@ -14,6 +14,7 @@
 #import "CLVStarChatTopicInfo.h"
 
 enum CLVStarChatAPIErrors {
+    CLVStarChatAPIErrorUnexpectedResponse = 1000,
     CLVStarChatAPIErrorUnknown = -1
 };
 

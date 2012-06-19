@@ -78,7 +78,28 @@
 - (void)subscribedChannels:(void (^)(NSArray *channels))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@/channels", self.userName]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            if (![JSON isKindOfClass:[NSArray class]]) {
+                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnexpectedResponse userInfo:JSON];
+                failure(error);
+            }
+            
+            NSMutableArray *channels = [NSMutableArray array];
+            for (NSDictionary *channelInfo in JSON) {
+                [channels addObject:[CLVStarChatChannelInfo channelInfoWithDictionary:channelInfo]];
+            }
+            
+            completion([NSArray arrayWithArray:channels]);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // GET /channels/channel_name
@@ -86,7 +107,19 @@
                 completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/channels/%@", channelName]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            CLVStarChatChannelInfo *channelInfo = [CLVStarChatChannelInfo channelInfoWithDictionary:JSON];
+            completion(channelInfo);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // PUT /channels/channel_name
