@@ -12,6 +12,7 @@
 #import "CLVStarChatUserInfo.h"
 #import "CLVStarChatChannelInfo.h"
 #import "CLVStarChatTopicInfo.h"
+#import "CLVStarChatMessageInfo.h"
 
 enum CLVStarChatAPIErrors {
     CLVStarChatAPIErrorUnexpectedResponse = 1000,

@@ -51,6 +51,7 @@ NSString *URLEncode(NSString *string);
             completion:(CLVStarChatAPIBasicSuccessBlock)completion
                failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
@@ -131,6 +132,7 @@ NSString *URLEncode(NSString *string);
                completion:(CLVStarChatAPIBasicSuccessBlock)completion
                   failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
@@ -170,7 +172,30 @@ NSString *URLEncode(NSString *string);
                       completion:(void (^)(NSArray *messages))completion
                          failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/channels/%@/messages/recent", URLEncode(channelName)]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            if (![JSON isKindOfClass:[NSArray class]]) {
+                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnexpectedResponse userInfo:JSON];
+                failure(error);
+            }
+            
+            NSMutableArray *messages = [NSMutableArray array];
+            for (NSDictionary *messageInfo in JSON) {
+                @autoreleasepool {
+                    [messages addObject:[CLVStarChatMessageInfo messageInfoWithDictionary:messageInfo]];
+                }
+            }
+            
+            completion([NSArray arrayWithArray:messages]);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -180,6 +205,7 @@ NSString *URLEncode(NSString *string);
                 completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
@@ -190,6 +216,7 @@ NSString *URLEncode(NSString *string);
          completion:(CLVStarChatAPIBasicSuccessBlock)completion
             failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
@@ -198,6 +225,7 @@ NSString *URLEncode(NSString *string);
               completion:(CLVStarChatAPIBasicSuccessBlock)completion
                  failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
@@ -206,6 +234,7 @@ NSString *URLEncode(NSString *string);
           completion:(CLVStarChatAPIBasicSuccessBlock)completion
              failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+#warning - not implemented.
     
 }
 
