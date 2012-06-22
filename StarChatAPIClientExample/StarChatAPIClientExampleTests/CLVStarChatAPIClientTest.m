@@ -124,6 +124,8 @@
             GHAssertTrue([channel isKindOfClass:[CLVStarChatChannelInfo class]], @"'channel' should be instance of CLVStarChatChannnelInfo.");
         }
         
+        GHAssertEquals([channels count], 3U, @"channels should have 3 elements");
+        
         GHAssertEqualStrings([[channels objectAtIndex:0] name], @"はひふへほ", @"channel.name should equal to 'はひふへほ'");
         GHAssertEqualStrings([[channels objectAtIndex:1] name], @"Lobby", @"channel.name should equal to 'Lobby'");
         GHAssertEqualStrings([[channels objectAtIndex:2] name], @"test", @"channel.name should equal to 'test'");
@@ -173,7 +175,33 @@
 // GET /channels/channel_name/users
 - (void)testUsersForChannel
 {
-    GHFail(@"write test code.");
+    NSString *jsonString = @"[{\"name\":\"hoge\",\"nick\":\"hoge\"},{\"name\":\"foo\",\"nick\":\"foo\",\"keywords\":[\"nununu\"]}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/はひふへほ/users"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    [self prepare];
+    
+    [client usersForChannel:@"はひふへほ"
+                 completion:^(NSArray *users){
+                     for (id user in users) {
+                         GHAssertTrue([user isKindOfClass:[CLVStarChatUserInfo class]], @"'user' should be instance of CLVStarChatUserInfo.");
+                     }
+                     
+                     GHAssertEquals([users count], 2U, @"users should have 2 elements");
+                     
+                     GHAssertEqualStrings([[users objectAtIndex:0] name], @"hoge", @"user.name should equal to 'hoge'");
+                     GHAssertEqualStrings([[users objectAtIndex:1] name], @"foo", @"user.name should equal to 'foo'");
+                     
+                     [self notify:kGHUnitWaitStatusSuccess];
+                 }
+                    failure:^(NSError *error){
+                        [self notify:kGHUnitWaitStatusFailure];
+                    }];
+    
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:5.0f];
 }
 
 // GET /channels/channel_name/messages/recent

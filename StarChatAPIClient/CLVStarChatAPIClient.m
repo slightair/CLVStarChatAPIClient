@@ -93,7 +93,9 @@ NSString *URLEncode(NSString *string);
             
             NSMutableArray *channels = [NSMutableArray array];
             for (NSDictionary *channelInfo in JSON) {
-                [channels addObject:[CLVStarChatChannelInfo channelInfoWithDictionary:channelInfo]];
+                @autoreleasepool {
+                    [channels addObject:[CLVStarChatChannelInfo channelInfoWithDictionary:channelInfo]];
+                }
             }
             
             completion([NSArray arrayWithArray:channels]);
@@ -109,7 +111,6 @@ NSString *URLEncode(NSString *string);
                 completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-    
     NSMutableURLRequest *request = [self requestWithMethod:@"GET"
                                                       path:[NSString stringWithFormat:@"/channels/%@", URLEncode(channelName)]
                                                 parameters:nil];
@@ -138,7 +139,30 @@ NSString *URLEncode(NSString *string);
              completion:(void (^)(NSArray *users))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 {
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/channels/%@/users", URLEncode(channelName)]
+                                                parameters:nil];
     
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            if (![JSON isKindOfClass:[NSArray class]]) {
+                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnexpectedResponse userInfo:JSON];
+                failure(error);
+            }
+            
+            NSMutableArray *users = [NSMutableArray array];
+            for (NSDictionary *userInfo in JSON) {
+                @autoreleasepool {
+                    [users addObject:[CLVStarChatUserInfo userInfoWithDictionary:userInfo]];
+                }
+            }
+            
+            completion([NSArray arrayWithArray:users]);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 // GET /channels/channel_name/messages/recent
