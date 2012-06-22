@@ -8,6 +8,8 @@
 
 #import "CLVStarChatAPIClient.h"
 
+NSString *URLEncode(NSString *string);
+
 @interface CLVStarChatAPIClient ()
 
 @property (nonatomic, readwrite, strong) NSString *userName;
@@ -107,8 +109,9 @@
                 completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
+    
     NSMutableURLRequest *request = [self requestWithMethod:@"GET"
-                                                      path:[NSString stringWithFormat:@"/channels/%@", channelName]
+                                                      path:[NSString stringWithFormat:@"/channels/%@", URLEncode(channelName)]
                                                 parameters:nil];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
@@ -183,3 +186,9 @@
 }
 
 @end
+
+NSString *URLEncode(NSString *string) {
+    CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, CFSTR (";,/?:@&=+$#"), kCFStringEncodingUTF8);
+    
+    return (__bridge NSString *)encodedString;
+}
