@@ -8,10 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1A82A5B74CED466EB7611858 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4D6CCF628474498CA36EF /* libPods.a */; };
-		57538494158C69B8006C9902 /* CLVStarChatUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538493158C69B8006C9902 /* CLVStarChatUserInfo.m */; };
-		57538498158C69D4006C9902 /* CLVStarChatChannelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538497158C69D4006C9902 /* CLVStarChatChannelInfo.m */; };
-		5753849B158C6EA1006C9902 /* CLVStarChatTopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849A158C6EA1006C9902 /* CLVStarChatTopicInfo.m */; };
-		5753849E158C7373006C9902 /* CLVStarChatMessageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849D158C7373006C9902 /* CLVStarChatMessageInfo.m */; };
 		575384CD158CE10B006C9902 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A11586FD6600470D1C /* UIKit.framework */; };
 		575384CE158CE10B006C9902 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A31586FD6600470D1C /* Foundation.framework */; };
 		575384CF158CE10C006C9902 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A51586FD6600470D1C /* CoreGraphics.framework */; };
@@ -23,30 +19,26 @@
 		575B72AC1586FD6600470D1C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 575B72AA1586FD6600470D1C /* InfoPlist.strings */; };
 		575B72AE1586FD6600470D1C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72AD1586FD6600470D1C /* main.m */; };
 		575B72B21586FD6600470D1C /* CLVAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72B11586FD6600470D1C /* CLVAppDelegate.m */; };
-		575B72C01586FDF800470D1C /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */; };
 		57F392DA158E029F00B71B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392D9158E029F00B71B9A /* main.m */; };
 		57F392DE158E05A300B71B9A /* CLVStarChatUserInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */; };
-		57F392DF158E0E3E00B71B9A /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */; };
-		57F392E0158E0E3E00B71B9A /* CLVStarChatUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538493158C69B8006C9902 /* CLVStarChatUserInfo.m */; };
-		57F392E1158E0E3E00B71B9A /* CLVStarChatChannelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57538497158C69D4006C9902 /* CLVStarChatChannelInfo.m */; };
-		57F392E2158E0E3E00B71B9A /* CLVStarChatTopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849A158C6EA1006C9902 /* CLVStarChatTopicInfo.m */; };
-		57F392E3158E0E3E00B71B9A /* CLVStarChatMessageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5753849D158C7373006C9902 /* CLVStarChatMessageInfo.m */; };
 		57F392E6158E10F700B71B9A /* CLVStarChatChannelInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392E5158E10F700B71B9A /* CLVStarChatChannelInfoTest.m */; };
 		57F392E9158E315F00B71B9A /* CLVStarChatTopicInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392E8158E315F00B71B9A /* CLVStarChatTopicInfoTest.m */; };
 		57F392EC158E318100B71B9A /* CLVStarChatMessageInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392EB158E318100B71B9A /* CLVStarChatMessageInfoTest.m */; };
 		57F392EF158E31A900B71B9A /* CLVStarChatAPIClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392EE158E31A900B71B9A /* CLVStarChatAPIClientTest.m */; };
+		57F3931015975FC100B71B9A /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930715975FC100B71B9A /* CLVStarChatAPIClient.m */; };
+		57F3931115975FC100B71B9A /* CLVStarChatAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930715975FC100B71B9A /* CLVStarChatAPIClient.m */; };
+		57F3931215975FC100B71B9A /* CLVStarChatChannelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930915975FC100B71B9A /* CLVStarChatChannelInfo.m */; };
+		57F3931315975FC100B71B9A /* CLVStarChatChannelInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930915975FC100B71B9A /* CLVStarChatChannelInfo.m */; };
+		57F3931415975FC100B71B9A /* CLVStarChatMessageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930B15975FC100B71B9A /* CLVStarChatMessageInfo.m */; };
+		57F3931515975FC100B71B9A /* CLVStarChatMessageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930B15975FC100B71B9A /* CLVStarChatMessageInfo.m */; };
+		57F3931615975FC100B71B9A /* CLVStarChatTopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930D15975FC100B71B9A /* CLVStarChatTopicInfo.m */; };
+		57F3931715975FC100B71B9A /* CLVStarChatTopicInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930D15975FC100B71B9A /* CLVStarChatTopicInfo.m */; };
+		57F3931815975FC100B71B9A /* CLVStarChatUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930F15975FC100B71B9A /* CLVStarChatUserInfo.m */; };
+		57F3931915975FC100B71B9A /* CLVStarChatUserInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F3930F15975FC100B71B9A /* CLVStarChatUserInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		53B2D48307FB4E03B1E0E804 /* Pods.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
-		57538492158C69B8006C9902 /* CLVStarChatUserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatUserInfo.h; path = ../StarChatAPIClient/CLVStarChatUserInfo.h; sourceTree = "<group>"; };
-		57538493158C69B8006C9902 /* CLVStarChatUserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatUserInfo.m; path = ../StarChatAPIClient/CLVStarChatUserInfo.m; sourceTree = "<group>"; };
-		57538496158C69D4006C9902 /* CLVStarChatChannelInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatChannelInfo.h; path = ../StarChatAPIClient/CLVStarChatChannelInfo.h; sourceTree = "<group>"; };
-		57538497158C69D4006C9902 /* CLVStarChatChannelInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatChannelInfo.m; path = ../StarChatAPIClient/CLVStarChatChannelInfo.m; sourceTree = "<group>"; };
-		57538499158C6EA1006C9902 /* CLVStarChatTopicInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatTopicInfo.h; path = ../StarChatAPIClient/CLVStarChatTopicInfo.h; sourceTree = "<group>"; };
-		5753849A158C6EA1006C9902 /* CLVStarChatTopicInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatTopicInfo.m; path = ../StarChatAPIClient/CLVStarChatTopicInfo.m; sourceTree = "<group>"; };
-		5753849C158C7373006C9902 /* CLVStarChatMessageInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatMessageInfo.h; path = ../StarChatAPIClient/CLVStarChatMessageInfo.h; sourceTree = "<group>"; };
-		5753849D158C7373006C9902 /* CLVStarChatMessageInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatMessageInfo.m; path = ../StarChatAPIClient/CLVStarChatMessageInfo.m; sourceTree = "<group>"; };
 		575384CB158CE10B006C9902 /* StarChatAPIClientExampleTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StarChatAPIClientExampleTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		575384D2158CE10C006C9902 /* StarChatAPIClientExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "StarChatAPIClientExampleTests-Info.plist"; sourceTree = "<group>"; };
 		575384D4158CE10C006C9902 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -61,8 +53,6 @@
 		575B72AF1586FD6600470D1C /* StarChatAPIClientExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StarChatAPIClientExample-Prefix.pch"; sourceTree = "<group>"; };
 		575B72B01586FD6600470D1C /* CLVAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLVAppDelegate.h; sourceTree = "<group>"; };
 		575B72B11586FD6600470D1C /* CLVAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLVAppDelegate.m; sourceTree = "<group>"; };
-		575B72BE1586FDF800470D1C /* CLVStarChatAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatAPIClient.h; path = ../StarChatAPIClient/CLVStarChatAPIClient.h; sourceTree = "<group>"; };
-		575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatAPIClient.m; path = ../StarChatAPIClient/CLVStarChatAPIClient.m; sourceTree = "<group>"; };
 		57F392D9158E029F00B71B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		57F392DC158E05A300B71B9A /* CLVStarChatUserInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLVStarChatUserInfoTest.h; sourceTree = "<group>"; };
 		57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLVStarChatUserInfoTest.m; sourceTree = "<group>"; };
@@ -74,6 +64,16 @@
 		57F392EB158E318100B71B9A /* CLVStarChatMessageInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLVStarChatMessageInfoTest.m; sourceTree = "<group>"; };
 		57F392ED158E31A900B71B9A /* CLVStarChatAPIClientTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLVStarChatAPIClientTest.h; sourceTree = "<group>"; };
 		57F392EE158E31A900B71B9A /* CLVStarChatAPIClientTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLVStarChatAPIClientTest.m; sourceTree = "<group>"; };
+		57F3930615975FC100B71B9A /* CLVStarChatAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatAPIClient.h; path = ../CLVStarChatAPIClient/CLVStarChatAPIClient.h; sourceTree = "<group>"; };
+		57F3930715975FC100B71B9A /* CLVStarChatAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatAPIClient.m; path = ../CLVStarChatAPIClient/CLVStarChatAPIClient.m; sourceTree = "<group>"; };
+		57F3930815975FC100B71B9A /* CLVStarChatChannelInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatChannelInfo.h; path = ../CLVStarChatAPIClient/CLVStarChatChannelInfo.h; sourceTree = "<group>"; };
+		57F3930915975FC100B71B9A /* CLVStarChatChannelInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatChannelInfo.m; path = ../CLVStarChatAPIClient/CLVStarChatChannelInfo.m; sourceTree = "<group>"; };
+		57F3930A15975FC100B71B9A /* CLVStarChatMessageInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatMessageInfo.h; path = ../CLVStarChatAPIClient/CLVStarChatMessageInfo.h; sourceTree = "<group>"; };
+		57F3930B15975FC100B71B9A /* CLVStarChatMessageInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatMessageInfo.m; path = ../CLVStarChatAPIClient/CLVStarChatMessageInfo.m; sourceTree = "<group>"; };
+		57F3930C15975FC100B71B9A /* CLVStarChatTopicInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatTopicInfo.h; path = ../CLVStarChatAPIClient/CLVStarChatTopicInfo.h; sourceTree = "<group>"; };
+		57F3930D15975FC100B71B9A /* CLVStarChatTopicInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatTopicInfo.m; path = ../CLVStarChatAPIClient/CLVStarChatTopicInfo.m; sourceTree = "<group>"; };
+		57F3930E15975FC100B71B9A /* CLVStarChatUserInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLVStarChatUserInfo.h; path = ../CLVStarChatAPIClient/CLVStarChatUserInfo.h; sourceTree = "<group>"; };
+		57F3930F15975FC100B71B9A /* CLVStarChatUserInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLVStarChatUserInfo.m; path = ../CLVStarChatAPIClient/CLVStarChatUserInfo.m; sourceTree = "<group>"; };
 		76A4D6CCF628474498CA36EF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -135,7 +135,7 @@
 		575B72921586FD6600470D1C = {
 			isa = PBXGroup;
 			children = (
-				575B72BD1586FD9D00470D1C /* StarChatAPIClient */,
+				575B72BD1586FD9D00470D1C /* CLVStarChatAPIClient */,
 				575B72A71586FD6600470D1C /* StarChatAPIClientExample */,
 				575384D0158CE10C006C9902 /* StarChatAPIClientExampleTests */,
 				575B72A01586FD6600470D1C /* Frameworks */,
@@ -185,21 +185,21 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		575B72BD1586FD9D00470D1C /* StarChatAPIClient */ = {
+		575B72BD1586FD9D00470D1C /* CLVStarChatAPIClient */ = {
 			isa = PBXGroup;
 			children = (
-				575B72BE1586FDF800470D1C /* CLVStarChatAPIClient.h */,
-				575B72BF1586FDF800470D1C /* CLVStarChatAPIClient.m */,
-				57538492158C69B8006C9902 /* CLVStarChatUserInfo.h */,
-				57538493158C69B8006C9902 /* CLVStarChatUserInfo.m */,
-				57538496158C69D4006C9902 /* CLVStarChatChannelInfo.h */,
-				57538497158C69D4006C9902 /* CLVStarChatChannelInfo.m */,
-				57538499158C6EA1006C9902 /* CLVStarChatTopicInfo.h */,
-				5753849A158C6EA1006C9902 /* CLVStarChatTopicInfo.m */,
-				5753849C158C7373006C9902 /* CLVStarChatMessageInfo.h */,
-				5753849D158C7373006C9902 /* CLVStarChatMessageInfo.m */,
+				57F3930615975FC100B71B9A /* CLVStarChatAPIClient.h */,
+				57F3930715975FC100B71B9A /* CLVStarChatAPIClient.m */,
+				57F3930815975FC100B71B9A /* CLVStarChatChannelInfo.h */,
+				57F3930915975FC100B71B9A /* CLVStarChatChannelInfo.m */,
+				57F3930A15975FC100B71B9A /* CLVStarChatMessageInfo.h */,
+				57F3930B15975FC100B71B9A /* CLVStarChatMessageInfo.m */,
+				57F3930C15975FC100B71B9A /* CLVStarChatTopicInfo.h */,
+				57F3930D15975FC100B71B9A /* CLVStarChatTopicInfo.m */,
+				57F3930E15975FC100B71B9A /* CLVStarChatUserInfo.h */,
+				57F3930F15975FC100B71B9A /* CLVStarChatUserInfo.m */,
 			);
-			name = StarChatAPIClient;
+			name = CLVStarChatAPIClient;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,16 +309,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				57F392DA158E029F00B71B9A /* main.m in Sources */,
-				57F392DF158E0E3E00B71B9A /* CLVStarChatAPIClient.m in Sources */,
-				57F392E0158E0E3E00B71B9A /* CLVStarChatUserInfo.m in Sources */,
-				57F392E1158E0E3E00B71B9A /* CLVStarChatChannelInfo.m in Sources */,
-				57F392E2158E0E3E00B71B9A /* CLVStarChatTopicInfo.m in Sources */,
-				57F392E3158E0E3E00B71B9A /* CLVStarChatMessageInfo.m in Sources */,
 				57F392DE158E05A300B71B9A /* CLVStarChatUserInfoTest.m in Sources */,
 				57F392E6158E10F700B71B9A /* CLVStarChatChannelInfoTest.m in Sources */,
 				57F392E9158E315F00B71B9A /* CLVStarChatTopicInfoTest.m in Sources */,
 				57F392EC158E318100B71B9A /* CLVStarChatMessageInfoTest.m in Sources */,
 				57F392EF158E31A900B71B9A /* CLVStarChatAPIClientTest.m in Sources */,
+				57F3931115975FC100B71B9A /* CLVStarChatAPIClient.m in Sources */,
+				57F3931315975FC100B71B9A /* CLVStarChatChannelInfo.m in Sources */,
+				57F3931515975FC100B71B9A /* CLVStarChatMessageInfo.m in Sources */,
+				57F3931715975FC100B71B9A /* CLVStarChatTopicInfo.m in Sources */,
+				57F3931915975FC100B71B9A /* CLVStarChatUserInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,11 +328,11 @@
 			files = (
 				575B72AE1586FD6600470D1C /* main.m in Sources */,
 				575B72B21586FD6600470D1C /* CLVAppDelegate.m in Sources */,
-				575B72C01586FDF800470D1C /* CLVStarChatAPIClient.m in Sources */,
-				57538494158C69B8006C9902 /* CLVStarChatUserInfo.m in Sources */,
-				57538498158C69D4006C9902 /* CLVStarChatChannelInfo.m in Sources */,
-				5753849B158C6EA1006C9902 /* CLVStarChatTopicInfo.m in Sources */,
-				5753849E158C7373006C9902 /* CLVStarChatMessageInfo.m in Sources */,
+				57F3931015975FC100B71B9A /* CLVStarChatAPIClient.m in Sources */,
+				57F3931215975FC100B71B9A /* CLVStarChatChannelInfo.m in Sources */,
+				57F3931415975FC100B71B9A /* CLVStarChatMessageInfo.m in Sources */,
+				57F3931615975FC100B71B9A /* CLVStarChatTopicInfo.m in Sources */,
+				57F3931815975FC100B71B9A /* CLVStarChatUserInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
