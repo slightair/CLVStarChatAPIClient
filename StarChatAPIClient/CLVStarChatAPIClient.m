@@ -12,6 +12,10 @@ NSString *URLEncode(NSString *string);
 
 @interface CLVStarChatAPIClient ()
 
+- (void)messagesForPath:(NSString *)path
+             completion:(void (^)(NSArray *messages))completion
+                failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
 @property (nonatomic, readwrite, strong) NSString *userName;
 
 @end
@@ -172,30 +176,9 @@ NSString *URLEncode(NSString *string);
                       completion:(void (^)(NSArray *messages))completion
                          failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
-                                                      path:[NSString stringWithFormat:@"/channels/%@/messages/recent", URLEncode(channelName)]
-                                                parameters:nil];
-    
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
-            if (![JSON isKindOfClass:[NSArray class]]) {
-                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnexpectedResponse userInfo:JSON];
-                failure(error);
-            }
-            
-            NSMutableArray *messages = [NSMutableArray array];
-            for (NSDictionary *messageInfo in JSON) {
-                @autoreleasepool {
-                    [messages addObject:[CLVStarChatMessageInfo messageInfoWithDictionary:messageInfo]];
-                }
-            }
-            
-            completion([NSArray arrayWithArray:messages]);
-        }
-        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-            failure(error);
-        }];
-    [operation start];
+    [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/recent", URLEncode(channelName)]
+               completion:completion
+                  failure:failure];
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -205,8 +188,9 @@ NSString *URLEncode(NSString *string);
                 completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-#warning - not implemented.
-    
+    [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%ld,%ld", URLEncode(channelName), startTime, endTime]
+               completion:completion
+                  failure:failure];
 }
 
 // POST /channels/channel_name/messages
@@ -236,6 +220,36 @@ NSString *URLEncode(NSString *string);
 {
 #warning - not implemented.
     
+}
+
+- (void)messagesForPath:(NSString *)path
+             completion:(void (^)(NSArray *messages))completion
+                failure:(CLVStarChatAPIBasicFailureBlock)failure
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:path
+                                                parameters:nil];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON){
+            if (![JSON isKindOfClass:[NSArray class]]) {
+                NSError *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain code:CLVStarChatAPIErrorUnexpectedResponse userInfo:JSON];
+                failure(error);
+            }
+            
+            NSMutableArray *messages = [NSMutableArray array];
+            for (NSDictionary *messageInfo in JSON) {
+                @autoreleasepool {
+                    [messages addObject:[CLVStarChatMessageInfo messageInfoWithDictionary:messageInfo]];
+                }
+            }
+            
+            completion([NSArray arrayWithArray:messages]);
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+            failure(error);
+        }];
+    [operation start];
 }
 
 @end

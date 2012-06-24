@@ -244,7 +244,40 @@
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
 - (void)testMessagesForChannel_startTime_endTime
 {
-    GHFail(@"write test code.");
+    NSString *jsonString = @"[{\"id\":461,\"user_name\":\"foo\",\"body\":\"あいうえお\",\"created_at\":1340372159,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":462,\"user_name\":\"foo\",\"body\":\"かきくけこ\",\"created_at\":1340372162,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":463,\"user_name\":\"foo\",\"body\":\"さしすせそ\",\"created_at\":1340372165,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":464,\"user_name\":\"foo\",\"body\":\"ニャーン\",\"created_at\":1340372169,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":465,\"user_name\":\"foo\",\"body\":\"ひろし\",\"created_at\":1340372199,\"channel_name\":\"てすと\",\"notice\":true}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/てすと/messages/by_time_span/10000,10100"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    [self prepare];
+    
+    [client messagesForChannel:@"てすと"
+                     startTime:10000
+                       endTime:10100
+                    completion:^(NSArray *messages){
+                        for (id message in messages) {
+                            GHAssertTrue([message isKindOfClass:[CLVStarChatMessageInfo class]], @"'message' should be instance of CLVStarChatMessageInfo.");
+                        }
+                        
+                        GHAssertEquals([messages count], 5U, @"messages should have 5 elements");
+                        
+                        GHAssertEqualStrings([[messages objectAtIndex:0] body], @"あいうえお", @"message.body should equal to 'あいうえお'");
+                        GHAssertEqualStrings([[messages objectAtIndex:1] body], @"かきくけこ", @"message.body should equal to 'かきくけこ'");
+                        GHAssertEqualStrings([[messages objectAtIndex:2] body], @"さしすせそ", @"message.body should equal to 'さしすせそ'");
+                        GHAssertEqualStrings([[messages objectAtIndex:3] body], @"ニャーン", @"message.body should equal to 'ニャーン'");
+                        GHAssertEqualStrings([[messages objectAtIndex:4] body], @"ひろし", @"message.body should equal to 'ひろし'");
+                        GHAssertEquals([[messages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
+                        GHAssertEquals([[messages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
+                        
+                        [self notify:kGHUnitWaitStatusSuccess];
+                    }
+                       failure:^(NSError *error){
+                           [self notify:kGHUnitWaitStatusFailure];
+                       }];
+    
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:5.0f];
 }
 
 // POST /channels/channel_name/messages
