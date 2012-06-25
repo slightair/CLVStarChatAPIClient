@@ -86,4 +86,6 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
           completion:(CLVStarChatAPIBasicSuccessBlock)completion
              failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+@property (nonatomic, readonly, strong) NSString *userName;
+
 @end

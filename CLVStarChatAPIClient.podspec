@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name     = 'CLVStarChatAPIClient'
-  s.version  = '0.0.1'
+  s.version  = '0.0.2'
   s.license  = 'BSD'
   s.summary  = 'StarChat API Objective-C Client'
   s.homepage = 'https://github.com/slightair/CLVStarChatAPIClient'
   s.author   = { 'Tomohiro Moro' => 'arksutite@gmail.com' }
-  s.source   = { :git => 'https://github.com/slightair/CLVStarChatAPIClient.git', :tag => '0.0.1' }
+  s.source   = { :git => 'https://github.com/slightair/CLVStarChatAPIClient.git', :tag => '0.0.2' }
   s.source_files = 'CLVStarChatAPIClient/*.{h,m}'
   s.clean_paths = "StarChatAPIClientExample"
   s.requires_arc = true
