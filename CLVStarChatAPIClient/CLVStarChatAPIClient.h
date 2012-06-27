@@ -73,6 +73,7 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
 - (void)postMessage:(NSString *)message
             channel:(NSString *)channelName
              notice:(BOOL)isNotice
+      temporaryNick:(NSString *)temporaryNick
          completion:(CLVStarChatAPIBasicSuccessBlock)completion
             failure:(CLVStarChatAPIBasicFailureBlock)failure;
 

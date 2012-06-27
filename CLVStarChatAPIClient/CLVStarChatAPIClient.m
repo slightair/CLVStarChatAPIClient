@@ -197,6 +197,7 @@ NSString *URLEncode(NSString *string);
 - (void)postMessage:(NSString *)message
             channel:(NSString *)channelName
              notice:(BOOL)isNotice
+      temporaryNick:(NSString *)temporaryNick
          completion:(CLVStarChatAPIBasicSuccessBlock)completion
             failure:(CLVStarChatAPIBasicFailureBlock)failure
 {

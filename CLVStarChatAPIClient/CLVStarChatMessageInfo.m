@@ -16,6 +16,7 @@
 @property (nonatomic, readwrite, strong) NSDate *createdAt;
 @property (nonatomic, readwrite, strong) NSString *channelName;
 @property (nonatomic, readwrite) BOOL isNotice;
+@property (nonatomic, readwrite, strong) NSString *temporaryNick;
 
 @end
 
@@ -27,6 +28,7 @@
 @synthesize createdAt = _createdAt;
 @synthesize channelName = _channelName;
 @synthesize isNotice = _isNotice;
+@synthesize temporaryNick = _temporaryNick;
 
 + (id)messageInfoWithDictionary:(NSDictionary *)dictionary
 {
@@ -43,6 +45,7 @@
         self.createdAt = [NSDate dateWithTimeIntervalSince1970:[[dictionary objectForKey:@"created_at"] integerValue]];
         self.channelName = [dictionary objectForKey:@"channel_name"];
         self.isNotice = [[dictionary objectForKey:@"notice"] boolValue];
+        self.temporaryNick = [dictionary objectForKey:@"temporary_nick"];
     }
     return self;
 }

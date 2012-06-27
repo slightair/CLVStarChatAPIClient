@@ -19,5 +19,6 @@
 @property (nonatomic, readonly, strong) NSDate *createdAt;
 @property (nonatomic, readonly, strong) NSString *channelName;
 @property (nonatomic, readonly) BOOL isNotice;
+@property (nonatomic, readonly, strong) NSString *temporaryNick;
 
 @end

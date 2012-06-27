@@ -281,7 +281,7 @@
 }
 
 // POST /channels/channel_name/messages
-- (void)testPostMessage_channel_notice
+- (void)testPostMessage_channel_notice_temporaryNick
 {
     GHFail(@"write test code.");
 }
