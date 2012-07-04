@@ -3,4 +3,4 @@ platform :ios
 dependency 'SBJson'
 dependency 'AFNetworking'
 dependency 'GHUnitIOS'
-dependency 'NLTHTTPStubServer'
+dependency 'NLTHTTPStubServer', :git => "git://github.com/yaakaito/NLTHTTPStubServer.git", :tag => "0.1.2"
