@@ -30,9 +30,10 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // PUT /users/user_name
-- (void)updateUserInfo:(NSArray *)keywords
-            completion:(CLVStarChatAPIBasicSuccessBlock)completion
-                failure:(CLVStarChatAPIBasicFailureBlock)failure;
+- (void)updateUserInfoWithNick:(NSString *)nick
+                      keywords:(NSArray *)keywords
+                    completion:(CLVStarChatAPIBasicSuccessBlock)completion
+                       failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // GET /users/user_name/ping
 - (void)sendPing:(CLVStarChatAPIBasicSuccessBlock)completion
@@ -48,7 +49,9 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
 // PUT /channels/channel_name
-- (void)updateChannelInfo:(NSString *)topic
+- (void)updateChannelInfo:(NSString *)channelName
+                    topic:(NSString *)topic
+                  private:(BOOL)isPrivate
                completion:(CLVStarChatAPIBasicSuccessBlock)completion
                   failure:(CLVStarChatAPIBasicFailureBlock)failure;
 

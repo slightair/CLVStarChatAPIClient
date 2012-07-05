@@ -51,12 +51,27 @@ NSString *URLEncode(NSString *string);
 }
 
 // PUT /users/user_name
-- (void)updateUserInfo:(NSArray *)keywords
-            completion:(CLVStarChatAPIBasicSuccessBlock)completion
-               failure:(CLVStarChatAPIBasicFailureBlock)failure
+- (void)updateUserInfoWithNick:(NSString *)nick
+                      keywords:(NSArray *)keywords
+                    completion:(CLVStarChatAPIBasicSuccessBlock)completion
+                       failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-#warning - not implemented.
+    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
+                                nick, @"nick",
+                                keywords, @"keywords",
+                                nil];
     
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:[NSString stringWithFormat:@"/users/%@", self.userName]
+                                                parameters:parameters];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject){
+        completion();
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error){
+                                         failure(error);
+                                     }];
+    [operation start];
 }
 
 // GET /users/user_name/ping
@@ -132,12 +147,28 @@ NSString *URLEncode(NSString *string);
 }
 
 // PUT /channels/channel_name
-- (void)updateChannelInfo:(NSString *)topic
+- (void)updateChannelInfo:(NSString *)channelName
+                    topic:(NSString *)topic
+                  private:(BOOL)isPrivate
                completion:(CLVStarChatAPIBasicSuccessBlock)completion
-                  failure:(CLVStarChatAPIBasicFailureBlock)failure
+                  failure:(CLVStarChatAPIBasicFailureBlock)failure;
 {
-#warning - not implemented.
+    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
+                                topic, @"topic[body]",
+                                (isPrivate ? @"private" : @"public"), @"privacy",
+                                nil];
     
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:[NSString stringWithFormat:@"/channels/%@", URLEncode(channelName)]
+                                                parameters:parameters];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject){
+        completion();
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error){
+                                         failure(error);
+                                     }];
+    [operation start];
 }
 
 // GET /channels/channel_name/users
@@ -201,8 +232,26 @@ NSString *URLEncode(NSString *string);
          completion:(CLVStarChatAPIBasicSuccessBlock)completion
             failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-#warning - not implemented.
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                message, @"body",
+                                (isNotice ? @"true" : @"false"), @"notice",
+                                nil];
     
+    if (temporaryNick && [temporaryNick isKindOfClass:[NSString class]]) {
+        [parameters setObject:temporaryNick forKey:@"temporary_nick"];
+    }
+    
+    NSMutableURLRequest *request = [self requestWithMethod:@"POST"
+                                                      path:[NSString stringWithFormat:@"/channels/%@/messages", URLEncode(channelName)]
+                                                parameters:parameters];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject){
+        completion();
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error){
+                                         failure(error);
+                                     }];
+    [operation start];
 }
 
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
@@ -210,8 +259,18 @@ NSString *URLEncode(NSString *string);
               completion:(CLVStarChatAPIBasicSuccessBlock)completion
                  failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-#warning - not implemented.
-    
+    NSString *path = [NSString stringWithFormat:@"/subscribings?user_name=%@&channel_name=%@", self.userName, URLEncode(channelName)];
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:path
+                                                parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject){
+        completion();
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error){
+                                         failure(error);
+                                     }];
+    [operation start];
 }
 
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
@@ -219,8 +278,18 @@ NSString *URLEncode(NSString *string);
           completion:(CLVStarChatAPIBasicSuccessBlock)completion
              failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-#warning - not implemented.
-    
+    NSString *path = [NSString stringWithFormat:@"/subscribings?user_name=%@&channel_name=%@", self.userName, URLEncode(channelName)];
+    NSMutableURLRequest *request = [self requestWithMethod:@"DELETE"
+                                                      path:path
+                                                parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject){
+        completion();
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error){
+                                         failure(error);
+                                     }];
+    [operation start];
 }
 
 - (void)messagesForPath:(NSString *)path
