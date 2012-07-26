@@ -81,6 +81,28 @@
     GHAssertEqualObjects(userInfo.keywords, expectKeywords, @"userInfo.keywords should equal to %@", expectKeywords);
 }
 
+- (void)testSynchronousUserInfoForName
+{
+    NSString *jsonString = @"{\"name\": \"michael\",  \"nick\": \"MJ\", \"keywords\": [\"michael\", \"Michael\", \"FYI\"]}";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/users/michael"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    CLVStarChatUserInfo *userInfo = [client userInfoForName:@"michael" error:&error];
+    
+    NSString *expectName = @"michael";
+    NSString *expectNick = @"MJ";
+    NSArray *expectKeywords = [NSArray arrayWithObjects:@"michael", @"Michael", @"FYI", nil];
+    
+    GHAssertEqualStrings(userInfo.name, expectName, @"userInfo.name should equal to %@", expectName);
+    GHAssertEqualStrings(userInfo.nick, expectNick, @"userInfo.nick should equal to %@", expectNick);
+    GHAssertEqualObjects(userInfo.keywords, expectKeywords, @"userInfo.keywords should equal to %@", expectKeywords);
+    GHAssertNil(error, @"error should be nil");
+}
+
 // PUT /users/user_name
 - (void)testUpdateUserInfo
 {
@@ -122,6 +144,40 @@
     GHAssertEquals(score, 5U, @"post body should have specified keywords and nick.");
 }
 
+- (void)testSynchronousUpdateUserInfo
+{
+    __block NSString *postBodyString = nil;
+    [[[[self.stubServer stub] forPath:@"/users/foo" HTTPMethod:@"PUT"] andCheckPostBody:^(NSData *postBody){
+        postBodyString = [[NSString alloc] initWithData:postBody encoding:NSUTF8StringEncoding];
+    }] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client updateUserInfoWithNick:@"hogenick"
+                                        keywords:[NSArray arrayWithObjects:@"hoge", @"fuga", @"piyo", @"はひふへほ", nil]
+                                           error:&error];
+    
+    NSArray *params = [postBodyString componentsSeparatedByString:@"&"];
+    
+    GHAssertEquals([params count], 5U, @"params should have 5 objects");
+    
+    NSUInteger score = 0;
+    for (NSString *param in params) {
+        if ([param isEqualToString:@"keywords[]=hoge"] ||
+            [param isEqualToString:@"keywords[]=fuga"] ||
+            [param isEqualToString:@"keywords[]=piyo"] ||
+            [param isEqualToString:@"keywords[]=%E3%81%AF%E3%81%B2%E3%81%B5%E3%81%B8%E3%81%BB"] ||
+            [param isEqualToString:@"nick=hogenick"]) {
+            score++;
+        }
+    }
+    GHAssertEquals(score, 5U, @"post body should have specified keywords and nick.");
+    GHAssertTrue(result, @"result should be YES");
+    GHAssertNil(error, @"error should be nil");
+}
+
 // GET /users/user_name/ping
 - (void)testSendPing
 {
@@ -142,6 +198,22 @@
              }];
     
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:5.0f];
+}
+
+- (void)testSynchronousSendPing
+{
+    NSString *jsonString = @"{\"result\": \"pong\"}";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/users/foo/ping"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client sendPing:&error];
+    
+    GHAssertTrue(result, @"result should be YES");
+    GHAssertNil(error, @"error should be nil");
 }
 
 // GET /users/user_name/channels
@@ -178,6 +250,30 @@
     GHAssertEqualStrings([[subscribedChannels objectAtIndex:2] name], @"test", @"channel.name should equal to 'test'");
 }
 
+- (void)testSynchronousSubscribedChannels
+{
+    NSString *jsonString = @"[{\"name\":\"はひふへほ\",\"privacy\":\"public\",\"user_num\":2},{\"name\":\"Lobby\",\"privacy\":\"public\",\"user_num\":3,\"topic\":{\"id\":6,\"created_at\":1339939789,\"user_name\":\"foo\",\"channel_name\":\"Lobby\",\"body\":\"nice topic\"}},{\"name\":\"test\",\"privacy\":\"private\",\"user_num\":2,\"topic\":{\"id\":4,\"created_at\":1339832042,\"user_name\":\"hoge\",\"channel_name\":\"test\",\"body\":\"topic topic\"}}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/users/foo/channels"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *subscribedChannels = [client subscribedChannels:&error];
+    
+    for (id channel in subscribedChannels) {
+        GHAssertTrue([channel isKindOfClass:[CLVStarChatChannelInfo class]], @"'channel' should be instance of CLVStarChatChannnelInfo.");
+    }
+    
+    GHAssertEquals([subscribedChannels count], 3U, @"channels should have 3 elements");
+    
+    GHAssertEqualStrings([[subscribedChannels objectAtIndex:0] name], @"はひふへほ", @"channel.name should equal to 'はひふへほ'");
+    GHAssertEqualStrings([[subscribedChannels objectAtIndex:1] name], @"Lobby", @"channel.name should equal to 'Lobby'");
+    GHAssertEqualStrings([[subscribedChannels objectAtIndex:2] name], @"test", @"channel.name should equal to 'test'");
+    GHAssertNil(error, @"error should be nil");
+}
+
 // GET /channels/channel_name
 - (void)testChannelInfoForName
 {
@@ -205,6 +301,24 @@
     GHAssertEqualStrings(channelInfo.name, @"はひふへほ", @"channel.name should equal to 'はひふへほ'");
     GHAssertEqualStrings(channelInfo.privacy, @"public", @"channel.privacy should equal to 'public'");
     GHAssertEquals(channelInfo.numUsers, 3, @"channel.numUsers should equal to '3'");
+}
+
+- (void)testSynchronousChannelInfoForName
+{
+    NSString *jsonString = @"{\"name\":\"はひふへほ\",\"privacy\":\"public\",\"user_num\":3,\"topic\":{\"id\":6,\"created_at\":1339939789,\"user_name\":\"foo\",\"channel_name\":\"はひふへほ\",\"body\":\"nice topic\"}}";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/はひふへほ"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    CLVStarChatChannelInfo *channelInfo = [client channelInfoForName:@"はひふへほ" error:&error];
+    
+    GHAssertEqualStrings(channelInfo.name, @"はひふへほ", @"channel.name should equal to 'はひふへほ'");
+    GHAssertEqualStrings(channelInfo.privacy, @"public", @"channel.privacy should equal to 'public'");
+    GHAssertEquals(channelInfo.numUsers, 3, @"channel.numUsers should equal to '3'");
+    GHAssertNil(error, @"error should be nil");
 }
 
 // PUT /channels/channel_name
@@ -246,6 +360,38 @@
     GHAssertEquals(score, 2U, @"post body should have specified topic and privacy.");
 }
 
+- (void)testSynchronousUpdateChannelInfo
+{
+    __block NSString *postBodyString = nil;
+    [[[[self.stubServer stub] forPath:@"/channels/てすと" HTTPMethod:@"PUT"] andCheckPostBody:^(NSData *postBody){
+        postBodyString = [[NSString alloc] initWithData:postBody encoding:NSUTF8StringEncoding];
+    }] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client updateChannelInfo:@"てすと"
+                                      topic:@"はひふへほ"
+                                    private:NO
+                                      error:&error];
+    
+    NSArray *params = [postBodyString componentsSeparatedByString:@"&"];
+    
+    GHAssertEquals([params count], 2U, @"params should have 2 objects");
+    
+    NSUInteger score = 0;
+    for (NSString *param in params) {
+        if ([param isEqualToString:@"topic[body]=%E3%81%AF%E3%81%B2%E3%81%B5%E3%81%B8%E3%81%BB"] ||
+            [param isEqualToString:@"privacy=public"]) {
+            score++;
+        }
+    }
+    GHAssertEquals(score, 2U, @"post body should have specified topic and privacy.");
+    GHAssertTrue(result, @"error should be YES");
+    GHAssertNil(error, @"error should be nil");
+}
+
 // GET /channels/channel_name/users
 - (void)testUsersForChannel
 {
@@ -278,6 +424,29 @@
     
     GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:0] name], @"hoge", @"user.name should equal to 'hoge'");
     GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:1] name], @"foo", @"user.name should equal to 'foo'");
+}
+
+- (void)testSynchronousUsersForChannel
+{
+    NSString *jsonString = @"[{\"name\":\"hoge\",\"nick\":\"hoge\"},{\"name\":\"foo\",\"nick\":\"foo\",\"keywords\":[\"nununu\"]}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/はひふへほ/users"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *hahihuhehoUsers = [client usersForChannel:@"はひふへほ" error:&error];
+    
+    for (id user in hahihuhehoUsers) {
+        GHAssertTrue([user isKindOfClass:[CLVStarChatUserInfo class]], @"'user' should be instance of CLVStarChatUserInfo.");
+    }
+    
+    GHAssertEquals([hahihuhehoUsers count], 2U, @"users should have 2 elements");
+    
+    GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:0] name], @"hoge", @"user.name should equal to 'hoge'");
+    GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:1] name], @"foo", @"user.name should equal to 'foo'");
+    GHAssertNil(error, @"error should be nil");
 }
 
 // GET /channels/channel_name/messages/recent
@@ -317,6 +486,34 @@
     GHAssertEqualStrings([[testMessages objectAtIndex:4] body], @"ひろし", @"message.body should equal to 'ひろし'");
     GHAssertEquals([[testMessages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
     GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
+}
+
+- (void)testSynchronousRecentMessagesForChannel
+{
+    NSString *jsonString = @"[{\"id\":461,\"user_name\":\"foo\",\"body\":\"あいうえお\",\"created_at\":1340372159,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":462,\"user_name\":\"foo\",\"body\":\"かきくけこ\",\"created_at\":1340372162,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":463,\"user_name\":\"foo\",\"body\":\"さしすせそ\",\"created_at\":1340372165,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":464,\"user_name\":\"foo\",\"body\":\"ニャーン\",\"created_at\":1340372169,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":465,\"user_name\":\"foo\",\"body\":\"ひろし\",\"created_at\":1340372199,\"channel_name\":\"てすと\",\"notice\":true}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/てすと/messages/recent"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *testMessages = [client recentMessagesForChannel:@"てすと" error:&error];
+    
+    for (id message in testMessages) {
+        GHAssertTrue([message isKindOfClass:[CLVStarChatMessageInfo class]], @"'message' should be instance of CLVStarChatMessageInfo.");
+    }
+    
+    GHAssertEquals([testMessages count], 5U, @"messages should have 5 elements");
+    
+    GHAssertEqualStrings([[testMessages objectAtIndex:0] body], @"あいうえお", @"message.body should equal to 'あいうえお'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:1] body], @"かきくけこ", @"message.body should equal to 'かきくけこ'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:2] body], @"さしすせそ", @"message.body should equal to 'さしすせそ'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:3] body], @"ニャーン", @"message.body should equal to 'ニャーン'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:4] body], @"ひろし", @"message.body should equal to 'ひろし'");
+    GHAssertEquals([[testMessages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
+    GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
+    GHAssertNil(error, @"error should be nil");
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -360,6 +557,37 @@
     GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
 }
 
+- (void)testSynchronousMessagesForChannel_startTime_endTime
+{
+    NSString *jsonString = @"[{\"id\":461,\"user_name\":\"foo\",\"body\":\"あいうえお\",\"created_at\":1340372159,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":462,\"user_name\":\"foo\",\"body\":\"かきくけこ\",\"created_at\":1340372162,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":463,\"user_name\":\"foo\",\"body\":\"さしすせそ\",\"created_at\":1340372165,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":464,\"user_name\":\"foo\",\"body\":\"ニャーン\",\"created_at\":1340372169,\"channel_name\":\"てすと\",\"notice\":false},{\"id\":465,\"user_name\":\"foo\",\"body\":\"ひろし\",\"created_at\":1340372199,\"channel_name\":\"てすと\",\"notice\":true}]";
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    [[[[self.stubServer stub] forPath:@"/channels/てすと/messages/by_time_span/10000,10100"] andJSONResponse:jsonData] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *testMessages = [client messagesForChannel:@"てすと"
+                                             startTime:10000
+                                               endTime:10100
+                                                 error:&error];
+    
+    for (id message in testMessages) {
+        GHAssertTrue([message isKindOfClass:[CLVStarChatMessageInfo class]], @"'message' should be instance of CLVStarChatMessageInfo.");
+    }
+    
+    GHAssertEquals([testMessages count], 5U, @"messages should have 5 elements");
+    
+    GHAssertEqualStrings([[testMessages objectAtIndex:0] body], @"あいうえお", @"message.body should equal to 'あいうえお'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:1] body], @"かきくけこ", @"message.body should equal to 'かきくけこ'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:2] body], @"さしすせそ", @"message.body should equal to 'さしすせそ'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:3] body], @"ニャーン", @"message.body should equal to 'ニャーン'");
+    GHAssertEqualStrings([[testMessages objectAtIndex:4] body], @"ひろし", @"message.body should equal to 'ひろし'");
+    GHAssertEquals([[testMessages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
+    GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
+    GHAssertNil(error, @"error should be nil");
+}
+
 // POST /channels/channel_name/messages
 - (void)testPostMessage_channel_notice_temporaryNick
 {
@@ -401,6 +629,40 @@
     GHAssertEquals(score, 3U, @"post body should have specified body, notice and temporary_nick.");
 }
 
+- (void)testSynchronousPostMessage_channel_notice_temporaryNick
+{
+    __block NSString *postBodyString = nil;
+    [[[[self.stubServer stub] forPath:@"/channels/てすと/messages" HTTPMethod:@"POST"] andCheckPostBody:^(NSData *postBody){
+        postBodyString = [[NSString alloc] initWithData:postBody encoding:NSUTF8StringEncoding];
+    }] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client postMessage:@"こんにちは"
+                              channel:@"てすと"
+                               notice:NO
+                        temporaryNick:@"はひふへほ"
+                                error:&error];
+    
+    NSArray *params = [postBodyString componentsSeparatedByString:@"&"];
+    
+    GHAssertEquals([params count], 3U, @"params should have 3 objects");
+    
+    NSUInteger score = 0;
+    for (NSString *param in params) {
+        if ([param isEqualToString:@"body=%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF"] ||
+            [param isEqualToString:@"notice=false"] ||
+            [param isEqualToString:@"temporary_nick=%E3%81%AF%E3%81%B2%E3%81%B5%E3%81%B8%E3%81%BB"]) {
+            score++;
+        }
+    }
+    GHAssertEquals(score, 3U, @"post body should have specified body, notice and temporary_nick.");
+    GHAssertTrue(result, @"result should be YES");
+    GHAssertNil(error, @"error should be nil");
+}
+
 #warning - skip test
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
 - (void)_testSubscribeChannel
@@ -424,6 +686,21 @@
 }
 
 #warning - skip test
+- (void)_testSynchronousSubscribeChannel
+{
+    [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"PUT"] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client subscribeChannel:@"てすと" error:&error];
+    
+    GHAssertTrue(result, @"result should be YES");
+    GHAssertNil(error, @"error should be nil");
+}
+
+#warning - skip test
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
 - (void)_testLeaveChannel
 {
@@ -443,6 +720,20 @@
                      }];
     
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:5.0f];
+}
+
+- (void)_testSynchronousLeaveChannel
+{
+    [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"DELETE"] andStatusCode:200];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client leaveChannel:@"てすと" error:&error];
+    
+    GHAssertTrue(result, @"result should be YES");
+    GHAssertNil(error, @"error should be nil");
 }
 
 @end
