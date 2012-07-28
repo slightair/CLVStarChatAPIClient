@@ -7,11 +7,13 @@
 //
 
 #import "CLVStarChatAPIClient.h"
+#import "SBJson.h"
 
 NSString *URLEncode(NSString *string);
 
 @interface CLVStarChatAPIClient ()
 
+- (BOOL)checkStatusCode:(NSInteger)statusCode;
 - (void)messagesForPath:(NSString *)path
              completion:(void (^)(NSArray *messages))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
@@ -50,6 +52,40 @@ NSString *URLEncode(NSString *string);
     [operation start];
 }
 
+- (CLVStarChatUserInfo *)userInfoForName:(NSString *)userName
+                                   error:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@", userName]
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return nil;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return nil;
+    }
+    
+    NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    return [CLVStarChatUserInfo userInfoWithDictionary:[JSONString JSONValue]];
+}
+
 // PUT /users/user_name
 - (void)updateUserInfoWithNick:(NSString *)nick
                       keywords:(NSArray *)keywords
@@ -72,6 +108,44 @@ NSString *URLEncode(NSString *string);
                                          failure(error);
                                      }];
     [operation start];
+}
+
+- (BOOL)updateUserInfoWithNick:(NSString *)nick
+                      keywords:(NSArray *)keywords
+                         error:(NSError **)error
+{
+    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
+                                nick, @"nick",
+                                keywords, @"keywords",
+                                nil];
+    
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:[NSString stringWithFormat:@"/users/%@", self.userName]
+                                                parameters:parameters];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
 }
 
 // GET /users/user_name/ping
@@ -320,6 +394,14 @@ NSString *URLEncode(NSString *string);
             failure(error);
         }];
     [operation start];
+}
+
+- (BOOL)checkStatusCode:(NSInteger)statusCode
+{
+    if (statusCode < 200 || 300 <= statusCode) {
+        return NO;
+    }
+    return YES;
 }
 
 @end
