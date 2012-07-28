@@ -29,24 +29,38 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
              completion:(void (^)(CLVStarChatUserInfo *userInfo))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (CLVStarChatUserInfo *)userInfoForName:(NSString *)userName
+                                   error:(NSError **)error;
+
 // PUT /users/user_name
 - (void)updateUserInfoWithNick:(NSString *)nick
                       keywords:(NSArray *)keywords
                     completion:(CLVStarChatAPIBasicSuccessBlock)completion
                        failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (BOOL)updateUserInfoWithNick:(NSString *)nick
+                      keywords:(NSArray *)keywords
+                         error:(NSError **)error;
+
 // GET /users/user_name/ping
 - (void)sendPing:(CLVStarChatAPIBasicSuccessBlock)completion
          failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
+- (BOOL)sendPing:(NSError **)error;
 
 // GET /users/user_name/channels
 - (void)subscribedChannels:(void (^)(NSArray *channels))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (NSArray *)subscribedChannels:(NSError **)error;
+
 // GET /channels/channel_name
 - (void)channelInfoForName:(NSString *)channelName
                 completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
+- (CLVStarChatChannelInfo *)channelInfoForName:(NSString *)channelName
+                                         error:(NSError **)error;
 
 // PUT /channels/channel_name
 - (void)updateChannelInfo:(NSString *)channelName
@@ -55,15 +69,26 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
                completion:(CLVStarChatAPIBasicSuccessBlock)completion
                   failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (BOOL)updateChannelInfo:(NSString *)channelName
+                    topic:(NSString *)topic
+                  private:(BOOL)isPrivate
+                    error:(NSError **)error;
+
 // GET /channels/channel_name/users
 - (void)usersForChannel:(NSString *)channelName
              completion:(void (^)(NSArray *users))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (NSArray *)usersForChannel:(NSString *)channelName
+                       error:(NSError **)error;
+
 // GET /channels/channel_name/messages/recent
 - (void)recentMessagesForChannel:(NSString *)channelName
                       completion:(void (^)(NSArray *messages))completion
                          failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
+- (NSArray *)recentMessagesForChannel:(NSString *)channelName
+                           error:(NSError **)error;
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
 - (void)messagesForChannel:(NSString *)channelName
@@ -71,6 +96,11 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
                    endTime:(NSInteger)endTime
                 completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
+- (NSArray *)messagesForChannel:(NSString *)channelName
+                 startTime:(NSInteger)startTime
+                   endTime:(NSInteger)endTime
+                     error:(NSError **)error;
 
 // POST /channels/channel_name/messages
 - (void)postMessage:(NSString *)message
@@ -80,15 +110,27 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
          completion:(CLVStarChatAPIBasicSuccessBlock)completion
             failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (BOOL)postMessage:(NSString *)message
+            channel:(NSString *)channelName
+             notice:(BOOL)isNotice
+      temporaryNick:(NSString *)temporaryNick
+              error:(NSError **)error;
+
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
 - (void)subscribeChannel:(NSString *)channelName
               completion:(CLVStarChatAPIBasicSuccessBlock)completion
                  failure:(CLVStarChatAPIBasicFailureBlock)failure;
 
+- (BOOL)subscribeChannel:(NSString *)channelName
+                   error:(NSError **)error;
+
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
 - (void)leaveChannel:(NSString *)channelName
           completion:(CLVStarChatAPIBasicSuccessBlock)completion
              failure:(CLVStarChatAPIBasicFailureBlock)failure;
+
+- (BOOL)leaveChannel:(NSString *)channelName
+               error:(NSError **)error;
 
 @property (nonatomic, readonly, strong) NSString *userName;
 
