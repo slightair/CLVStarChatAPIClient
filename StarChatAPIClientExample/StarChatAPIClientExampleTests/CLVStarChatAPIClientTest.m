@@ -103,6 +103,20 @@
     GHAssertNil(error, @"error should be nil");
 }
 
+- (void)testSynchronousUserInfoForNameError
+{
+    [[[self.stubServer stub] forPath:@"/users/michael"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    CLVStarChatUserInfo *userInfo = [client userInfoForName:@"michael" error:&error];
+    
+    GHAssertNil(userInfo, @"userInfo should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // PUT /users/user_name
 - (void)testUpdateUserInfo
 {
@@ -178,6 +192,22 @@
     GHAssertNil(error, @"error should be nil");
 }
 
+- (void)testSynchronousUpdateUserInfoError
+{
+    [[[self.stubServer stub] forPath:@"/users/foo" HTTPMethod:@"PUT"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client updateUserInfoWithNick:@"hogenick"
+                                        keywords:[NSArray arrayWithObjects:@"hoge", @"fuga", @"piyo", @"はひふへほ", nil]
+                                           error:&error];
+    
+    GHAssertFalse(result, @"result should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // GET /users/user_name/ping
 - (void)testSendPing
 {
@@ -214,6 +244,20 @@
     
     GHAssertTrue(result, @"result should be YES");
     GHAssertNil(error, @"error should be nil");
+}
+
+- (void)testSynchronousSendPingError
+{
+    [[[self.stubServer stub] forPath:@"/users/foo/ping"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client sendPing:&error];
+    
+    GHAssertFalse(result, @"result should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 // GET /users/user_name/channels
@@ -274,6 +318,20 @@
     GHAssertNil(error, @"error should be nil");
 }
 
+- (void)testSynchronousSubscribedChannelsError
+{
+    [[[self.stubServer stub] forPath:@"/users/foo/channels"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *subscribedChannels = [client subscribedChannels:&error];
+    
+    GHAssertNil(subscribedChannels, @"subscribedChannels should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // GET /channels/channel_name
 - (void)testChannelInfoForName
 {
@@ -319,6 +377,20 @@
     GHAssertEqualStrings(channelInfo.privacy, @"public", @"channel.privacy should equal to 'public'");
     GHAssertEquals(channelInfo.numUsers, 3, @"channel.numUsers should equal to '3'");
     GHAssertNil(error, @"error should be nil");
+}
+
+- (void)testSynchronousChannelInfoForNameError
+{
+    [[[self.stubServer stub] forPath:@"/channels/はひふへほ"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    CLVStarChatChannelInfo *channelInfo = [client channelInfoForName:@"はひふへほ" error:&error];
+    
+    GHAssertNil(channelInfo, @"channelInfo should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 // PUT /channels/channel_name
@@ -392,6 +464,23 @@
     GHAssertNil(error, @"error should be nil");
 }
 
+- (void)testSynchronousUpdateChannelInfoError
+{
+    [[[self.stubServer stub] forPath:@"/channels/てすと" HTTPMethod:@"PUT"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client updateChannelInfo:@"てすと"
+                                      topic:@"はひふへほ"
+                                    private:NO
+                                      error:&error];
+    
+    GHAssertFalse(result, @"error should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // GET /channels/channel_name/users
 - (void)testUsersForChannel
 {
@@ -447,6 +536,20 @@
     GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:0] name], @"hoge", @"user.name should equal to 'hoge'");
     GHAssertEqualStrings([[hahihuhehoUsers objectAtIndex:1] name], @"foo", @"user.name should equal to 'foo'");
     GHAssertNil(error, @"error should be nil");
+}
+
+- (void)testSynchronousUsersForChannelError
+{
+    [[[self.stubServer stub] forPath:@"/channels/はひふへほ/users"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *hahihuhehoUsers = [client usersForChannel:@"はひふへほ" error:&error];
+    
+    GHAssertNil(hahihuhehoUsers, @"hahihuhehoUsers should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 // GET /channels/channel_name/messages/recent
@@ -514,6 +617,20 @@
     GHAssertEquals([[testMessages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
     GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
     GHAssertNil(error, @"error should be nil");
+}
+
+- (void)testSynchronousRecentMessagesForChannelError
+{
+    [[[self.stubServer stub] forPath:@"/channels/てすと/messages/recent"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *testMessages = [client recentMessagesForChannel:@"てすと" error:&error];
+    
+    GHAssertNil(testMessages, @"testMessages should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -586,6 +703,23 @@
     GHAssertEquals([[testMessages objectAtIndex:0] isNotice], NO, @"message.isNotice should equal to 'foo'");
     GHAssertEquals([[testMessages objectAtIndex:4] isNotice], YES, @"message.isNotice should equal to 'foo'");
     GHAssertNil(error, @"error should be nil");
+}
+
+- (void)testSynchronousMessagesForChannel_startTime_endTimeError
+{
+    [[[self.stubServer stub] forPath:@"/channels/てすと/messages/by_time_span/10000,10100"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    NSArray *testMessages = [client messagesForChannel:@"てすと"
+                                             startTime:10000
+                                               endTime:10100
+                                                 error:&error];
+    
+    GHAssertNil(testMessages, @"testMessages should be nil");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 // POST /channels/channel_name/messages
@@ -663,8 +797,26 @@
     GHAssertNil(error, @"error should be nil");
 }
 
-#warning - skip test
+- (void)testSynchronousPostMessage_channel_notice_temporaryNickError
+{
+    [[[self.stubServer stub] forPath:@"/channels/てすと/messages" HTTPMethod:@"POST"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client postMessage:@"こんにちは"
+                              channel:@"てすと"
+                               notice:NO
+                        temporaryNick:@"はひふへほ"
+                                error:&error];
+    
+    GHAssertFalse(result, @"result should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
+#warning - skip test
 - (void)_testSubscribeChannel
 {
     [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"PUT"] andStatusCode:200];
@@ -701,7 +853,22 @@
 }
 
 #warning - skip test
+- (void)_testSynchronousSubscribeChannelError
+{
+    [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"PUT"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client subscribeChannel:@"てすと" error:&error];
+    
+    GHAssertFalse(result, @"result should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
+}
+
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
+#warning - skip test
 - (void)_testLeaveChannel
 {
     [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"DELETE"] andStatusCode:200];
@@ -722,6 +889,7 @@
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:5.0f];
 }
 
+#warning - skip test
 - (void)_testSynchronousLeaveChannel
 {
     [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"DELETE"] andStatusCode:200];
@@ -734,6 +902,21 @@
     
     GHAssertTrue(result, @"result should be YES");
     GHAssertNil(error, @"error should be nil");
+}
+
+#warning - skip test
+- (void)_testSynchronousLeaveChannelError
+{
+    [[[self.stubServer stub] forPath:@"/subscribings?user_name=foo&channel_name=%E3%81%A6%E3%81%99%E3%81%A8" HTTPMethod:@"DELETE"] andStatusCode:404];
+    
+    CLVStarChatAPIClient *client = [[CLVStarChatAPIClient alloc] initWithBaseURL:self.stubServerBaseURL];
+    [client setAuthorizationHeaderWithUsername:@"foo" password:@"bar"];
+    
+    NSError *error = nil;
+    BOOL result = [client leaveChannel:@"てすと" error:&error];
+    
+    GHAssertFalse(result, @"result should be NO");
+    GHAssertNotNil(error, @"error should not be nil");
 }
 
 @end
