@@ -17,6 +17,7 @@ NSString *URLEncode(NSString *string);
 - (void)messagesForPath:(NSString *)path
              completion:(void (^)(NSArray *messages))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
+- (NSArray *)messagesForPath:(NSString *)path error:(NSError **)error;
 
 @property (nonatomic, readwrite, strong) NSString *userName;
 
@@ -170,6 +171,37 @@ NSString *URLEncode(NSString *string);
     [operation start];
 }
 
+- (BOOL)sendPing:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@/ping", self.userName]
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
 // GET /users/user_name/channels
 - (void)subscribedChannels:(void (^)(NSArray *channels))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
@@ -200,6 +232,46 @@ NSString *URLEncode(NSString *string);
     [operation start];
 }
 
+- (NSArray *)subscribedChannels:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/users/%@/channels", self.userName]
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return nil;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return nil;
+    }
+    
+    NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    NSMutableArray *channels = [NSMutableArray array];
+    for (NSDictionary *channelInfo in [JSONString JSONValue]) {
+        @autoreleasepool {
+            [channels addObject:[CLVStarChatChannelInfo channelInfoWithDictionary:channelInfo]];
+        }
+    }
+    
+    return [NSArray arrayWithArray:channels];
+}
+
 // GET /channels/channel_name
 - (void)channelInfoForName:(NSString *)channelName
                 completion:(void (^)(CLVStarChatChannelInfo *channelInfo))completion
@@ -218,6 +290,39 @@ NSString *URLEncode(NSString *string);
             failure(error);
         }];
     [operation start];
+}
+
+- (CLVStarChatChannelInfo *)channelInfoForName:(NSString *)channelName error:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/channels/%@", URLEncode(channelName)]
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return nil;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return nil;
+    }
+    
+    NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    return [CLVStarChatChannelInfo channelInfoWithDictionary:[JSONString JSONValue]];
 }
 
 // PUT /channels/channel_name
@@ -243,6 +348,45 @@ NSString *URLEncode(NSString *string);
                                          failure(error);
                                      }];
     [operation start];
+}
+
+- (BOOL)updateChannelInfo:(NSString *)channelName
+                    topic:(NSString *)topic
+                  private:(BOOL)isPrivate
+                    error:(NSError **)error
+{
+    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
+                                topic, @"topic[body]",
+                                (isPrivate ? @"private" : @"public"), @"privacy",
+                                nil];
+    
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:[NSString stringWithFormat:@"/channels/%@", URLEncode(channelName)]
+                                                parameters:parameters];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
 }
 
 // GET /channels/channel_name/users
@@ -276,6 +420,47 @@ NSString *URLEncode(NSString *string);
     [operation start];
 }
 
+- (NSArray *)usersForChannel:(NSString *)channelName
+                       error:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:[NSString stringWithFormat:@"/channels/%@/users", URLEncode(channelName)]
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return nil;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return nil;
+    }
+    
+    NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    NSMutableArray *users = [NSMutableArray array];
+    for (NSDictionary *userInfo in [JSONString JSONValue]) {
+        @autoreleasepool {
+            [users addObject:[CLVStarChatUserInfo userInfoWithDictionary:userInfo]];
+        }
+    }
+    
+    return [NSArray arrayWithArray:users];
+}
+
 // GET /channels/channel_name/messages/recent
 - (void)recentMessagesForChannel:(NSString *)channelName
                       completion:(void (^)(NSArray *messages))completion
@@ -284,6 +469,13 @@ NSString *URLEncode(NSString *string);
     [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/recent", URLEncode(channelName)]
                completion:completion
                   failure:failure];
+}
+
+- (NSArray *)recentMessagesForChannel:(NSString *)channelName
+                                error:(NSError **)error
+{
+    return [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/recent", URLEncode(channelName)]
+                           error:error];
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -296,6 +488,15 @@ NSString *URLEncode(NSString *string);
     [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%ld,%ld", URLEncode(channelName), startTime, endTime]
                completion:completion
                   failure:failure];
+}
+
+- (NSArray *)messagesForChannel:(NSString *)channelName
+                      startTime:(NSInteger)startTime
+                        endTime:(NSInteger)endTime
+                          error:(NSError **)error
+{
+    return [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%ld,%ld", URLEncode(channelName), startTime, endTime]
+                           error:error];
 }
 
 // POST /channels/channel_name/messages
@@ -328,6 +529,50 @@ NSString *URLEncode(NSString *string);
     [operation start];
 }
 
+- (BOOL)postMessage:(NSString *)message
+            channel:(NSString *)channelName
+             notice:(BOOL)isNotice
+      temporaryNick:(NSString *)temporaryNick
+              error:(NSError **)error
+{
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                       message, @"body",
+                                       (isNotice ? @"true" : @"false"), @"notice",
+                                       nil];
+    
+    if (temporaryNick && [temporaryNick isKindOfClass:[NSString class]]) {
+        [parameters setObject:temporaryNick forKey:@"temporary_nick"];
+    }
+    
+    NSMutableURLRequest *request = [self requestWithMethod:@"POST"
+                                                      path:[NSString stringWithFormat:@"/channels/%@/messages", URLEncode(channelName)]
+                                                parameters:parameters];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
 - (void)subscribeChannel:(NSString *)channelName
               completion:(CLVStarChatAPIBasicSuccessBlock)completion
@@ -345,6 +590,39 @@ NSString *URLEncode(NSString *string);
                                          failure(error);
                                      }];
     [operation start];
+}
+
+- (BOOL)subscribeChannel:(NSString *)channelName
+                   error:(NSError **)error
+{
+    NSString *path = [NSString stringWithFormat:@"/subscribings?user_name=%@&channel_name=%@", self.userName, URLEncode(channelName)];
+    NSMutableURLRequest *request = [self requestWithMethod:@"PUT"
+                                                      path:path
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
 }
 
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
@@ -365,6 +643,42 @@ NSString *URLEncode(NSString *string);
                                      }];
     [operation start];
 }
+
+- (BOOL)leaveChannel:(NSString *)channelName
+               error:(NSError **)error
+{
+    NSString *path = [NSString stringWithFormat:@"/subscribings?user_name=%@&channel_name=%@", self.userName, URLEncode(channelName)];
+    NSMutableURLRequest *request = [self requestWithMethod:@"DELETE"
+                                                      path:path
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return NO;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
+#pragma mark -
+#pragma mark Private Methods
 
 - (void)messagesForPath:(NSString *)path
              completion:(void (^)(NSArray *messages))completion
@@ -394,6 +708,47 @@ NSString *URLEncode(NSString *string);
             failure(error);
         }];
     [operation start];
+}
+
+- (NSArray *)messagesForPath:(NSString *)path
+                       error:(NSError **)error
+{
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET"
+                                                      path:path
+                                                parameters:nil];
+    
+    NSError *localError = nil;
+    NSURLResponse *response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&localError];
+    
+    if (localError) {
+        if (error) {
+            *error = localError;
+        }
+        return nil;
+    }
+    
+    NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+    if (![self checkStatusCode:statusCode]) {
+        if (error) {
+            *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
+                                         code:NSURLErrorBadServerResponse
+                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
+                                                                          forKey:NSLocalizedDescriptionKey]];
+        }
+        return nil;
+    }
+    
+    NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+    NSMutableArray *messages = [NSMutableArray array];
+    for (NSDictionary *messageInfo in [JSONString JSONValue]) {
+        @autoreleasepool {
+            [messages addObject:[CLVStarChatMessageInfo messageInfoWithDictionary:messageInfo]];
+        }
+    }
+    
+    return [NSArray arrayWithArray:messages];
 }
 
 - (BOOL)checkStatusCode:(NSInteger)statusCode
