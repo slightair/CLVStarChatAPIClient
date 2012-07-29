@@ -33,7 +33,6 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 @property (nonatomic, strong) SBJsonStreamParserAdapter *streamParserAdapter;
 @property (nonatomic, strong) SBJsonStreamParser *streamParser;
 @property (nonatomic, strong) NSTimer *keepConnectionTimer;
-@property (nonatomic, assign) CFReadStreamRef readStreamRef;
 @property (nonatomic, assign) time_t lastPacketReceivedAt;
 @property (nonatomic, assign) AFNetworkReachabilityStatus reachabilityStatus;
 
@@ -43,6 +42,9 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 @end
 
 @implementation CLVStarChatAPIClient
+{
+    CFReadStreamRef _readStreamRef;
+}
 
 @synthesize delegate = _delegate;
 @synthesize userName = _userName;
@@ -51,7 +53,6 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 @synthesize streamParserAdapter = _streamParserAdapter;
 @synthesize streamParser = _streamParser;
 @synthesize keepConnectionTimer = _keepConnectionTimer;
-@synthesize readStreamRef = _readStreamRef;
 @synthesize lastPacketReceivedAt = _lastPacketReceivedAt;
 @synthesize reachabilityStatus = _reachabilityStatus;
 
@@ -780,9 +781,9 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
     
     [self stopKeepConnectionTimer];
     
-    if (self.readStreamRef) {
-        CFReadStreamUnscheduleFromRunLoop(self.readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
-        CFReadStreamClose(self.readStreamRef);
+    if (_readStreamRef) {
+        CFReadStreamUnscheduleFromRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFReadStreamClose(_readStreamRef);
         [self releaseReadStream];
     }
     
@@ -794,17 +795,17 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 
 - (void)releaseReadStream
 {
-    if (self.readStreamRef) {
-        CFRelease(self.readStreamRef);
+    if (_readStreamRef) {
+        CFRelease(_readStreamRef);
     }
-    self.readStreamRef = NULL;
+    _readStreamRef = NULL;
 }
 
 - (void)connectUserStreamAPI
 {
-    if (self.readStreamRef) {
-        CFReadStreamUnscheduleFromRunLoop(self.readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
-        CFReadStreamClose(self.readStreamRef);
+    if (_readStreamRef) {
+        CFReadStreamUnscheduleFromRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFReadStreamClose(_readStreamRef);
         [self releaseReadStream];
     }
     
@@ -822,19 +823,19 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
     }
     CFHTTPMessageSetHeaderFieldValue(messageRef, CFSTR("Accept"), CFSTR("application/json"));
     
-    self.readStreamRef = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, messageRef);
+    _readStreamRef = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, messageRef);
     CFStreamClientContext contextRef = {0, (__bridge void *)self, NULL, NULL, NULL};
     
-    if (CFReadStreamSetClient(self.readStreamRef,
+    if (CFReadStreamSetClient(_readStreamRef,
                               (kCFStreamEventOpenCompleted  |
                                kCFStreamEventHasBytesAvailable |
                                kCFStreamEventEndEncountered |
                                kCFStreamEventErrorOccurred),
                               &readHttpStreamCallBack,
                               &contextRef)) {
-        CFReadStreamScheduleWithRunLoop(self.readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFReadStreamScheduleWithRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
     }
-    CFReadStreamOpen(self.readStreamRef);
+    CFReadStreamOpen(_readStreamRef);
     
     CFRelease(messageRef);
     CFRelease(urlRef);
@@ -860,8 +861,8 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 {
     [self stopKeepConnectionTimer];
     
-    if (self.readStreamRef) {
-        CFRelease(self.readStreamRef);
+    if (_readStreamRef) {
+        CFRelease(_readStreamRef);
     }
 }
 
