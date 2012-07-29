@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1A82A5B74CED466EB7611858 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76A4D6CCF628474498CA36EF /* libPods.a */; };
+		5727AE5915C522C400B83592 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57AD74B415C5203A007CB536 /* SystemConfiguration.framework */; };
 		575384CD158CE10B006C9902 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A11586FD6600470D1C /* UIKit.framework */; };
 		575384CE158CE10B006C9902 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A31586FD6600470D1C /* Foundation.framework */; };
 		575384CF158CE10C006C9902 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 575B72A51586FD6600470D1C /* CoreGraphics.framework */; };
@@ -19,6 +20,7 @@
 		575B72AC1586FD6600470D1C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 575B72AA1586FD6600470D1C /* InfoPlist.strings */; };
 		575B72AE1586FD6600470D1C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72AD1586FD6600470D1C /* main.m */; };
 		575B72B21586FD6600470D1C /* CLVAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B72B11586FD6600470D1C /* CLVAppDelegate.m */; };
+		57AD74B515C5203B007CB536 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57AD74B415C5203A007CB536 /* SystemConfiguration.framework */; };
 		57F392DA158E029F00B71B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392D9158E029F00B71B9A /* main.m */; };
 		57F392DE158E05A300B71B9A /* CLVStarChatUserInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */; };
 		57F392E6158E10F700B71B9A /* CLVStarChatChannelInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 57F392E5158E10F700B71B9A /* CLVStarChatChannelInfoTest.m */; };
@@ -53,6 +55,7 @@
 		575B72AF1586FD6600470D1C /* StarChatAPIClientExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "StarChatAPIClientExample-Prefix.pch"; sourceTree = "<group>"; };
 		575B72B01586FD6600470D1C /* CLVAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CLVAppDelegate.h; sourceTree = "<group>"; };
 		575B72B11586FD6600470D1C /* CLVAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CLVAppDelegate.m; sourceTree = "<group>"; };
+		57AD74B415C5203A007CB536 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		57F392D9158E029F00B71B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		57F392DC158E05A300B71B9A /* CLVStarChatUserInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLVStarChatUserInfoTest.h; sourceTree = "<group>"; };
 		57F392DD158E05A300B71B9A /* CLVStarChatUserInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLVStarChatUserInfoTest.m; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 				575384CD158CE10B006C9902 /* UIKit.framework in Frameworks */,
 				575384CE158CE10B006C9902 /* Foundation.framework in Frameworks */,
 				575384CF158CE10C006C9902 /* CoreGraphics.framework in Frameworks */,
+				57AD74B515C5203B007CB536 /* SystemConfiguration.framework in Frameworks */,
 				575384E9158CE123006C9902 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5727AE5915C522C400B83592 /* SystemConfiguration.framework in Frameworks */,
 				575B72A21586FD6600470D1C /* UIKit.framework in Frameworks */,
 				575B72A41586FD6600470D1C /* Foundation.framework in Frameworks */,
 				575B72A61586FD6600470D1C /* CoreGraphics.framework in Frameworks */,
@@ -156,6 +161,7 @@
 		575B72A01586FD6600470D1C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				57AD74B415C5203A007CB536 /* SystemConfiguration.framework */,
 				575B72A11586FD6600470D1C /* UIKit.framework */,
 				575B72A31586FD6600470D1C /* Foundation.framework */,
 				575B72A51586FD6600470D1C /* CoreGraphics.framework */,
@@ -386,8 +392,6 @@
 					"-framework",
 					Security,
 					"-framework",
-					CFNetwork,
-					"-framework",
 					Security,
 					"-lxml2",
 					"-framework",
@@ -427,8 +431,6 @@
 					CFNetwork,
 					"-framework",
 					Security,
-					"-framework",
-					CFNetwork,
 					"-framework",
 					Security,
 					"-lxml2",

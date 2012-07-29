@@ -7,9 +7,14 @@
 //
 
 #import "CLVStarChatAPIClient.h"
-#import "SBJson.h"
+
+#define kClientBufferSize 2048
+#define kReconnectThreshold 90
 
 NSString *URLEncode(NSString *string);
+
+// CFNetwork CFReadStreamClientCallBack
+void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType, void *clientCallBackInfo);
 
 @interface CLVStarChatAPIClient ()
 
@@ -18,19 +23,89 @@ NSString *URLEncode(NSString *string);
              completion:(void (^)(NSArray *messages))completion
                 failure:(CLVStarChatAPIBasicFailureBlock)failure;
 - (NSArray *)messagesForPath:(NSString *)path error:(NSError **)error;
+- (void)releaseReadStream;
+- (void)connectUserStreamAPI;
+- (void)stopKeepConnectionTimer;
+- (void)checkPacketInterval;
 
-@property (nonatomic, readwrite, strong) NSString *userName;
+@property (nonatomic, strong, readwrite) NSString *userName;
+@property (nonatomic, assign, readwrite) CLVStarChatUserStreamConnectionStatus connectionStatus;
+@property (nonatomic, strong) SBJsonStreamParserAdapter *streamParserAdapter;
+@property (nonatomic, strong) SBJsonStreamParser *streamParser;
+@property (nonatomic, strong) NSTimer *keepConnectionTimer;
+@property (nonatomic, assign) time_t lastPacketReceivedAt;
+@property (nonatomic, assign) AFNetworkReachabilityStatus reachabilityStatus;
+
+// AFHTTPClient
+@property (readwrite, nonatomic, retain) NSMutableDictionary *defaultHeaders;
 
 @end
 
 @implementation CLVStarChatAPIClient
+{
+    CFReadStreamRef _readStreamRef;
+}
 
+@synthesize delegate = _delegate;
 @synthesize userName = _userName;
+@synthesize connectionStatus = _connectionStatus;
+@synthesize isAutoConnect = _isAutoConnect;
+@synthesize streamParserAdapter = _streamParserAdapter;
+@synthesize streamParser = _streamParser;
+@synthesize keepConnectionTimer = _keepConnectionTimer;
+@synthesize lastPacketReceivedAt = _lastPacketReceivedAt;
+@synthesize reachabilityStatus = _reachabilityStatus;
+
+// AFHTTPClient
+@synthesize defaultHeaders = _defaultHeaders;
 
 - (void)setAuthorizationHeaderWithUsername:(NSString *)username password:(NSString *)password
 {
     self.userName = username;
     [super setAuthorizationHeaderWithUsername:username password:password];
+}
+
+- (id)initWithBaseURL:(NSURL *)url
+{
+    self = [super initWithBaseURL:url];
+    if (self) {
+        SBJsonStreamParserAdapter *adapter = [[SBJsonStreamParserAdapter alloc] init];
+        adapter.delegate = self;
+        
+        SBJsonStreamParser *parser = [[SBJsonStreamParser alloc] init];
+        parser.delegate = adapter;
+        parser.supportMultipleDocuments = YES;
+        
+        self.streamParserAdapter = adapter;
+        self.streamParser = parser;
+        self.connectionStatus = CLVStarChatUserStreamConnectionStatusNone;
+        self.isAutoConnect = NO;
+        self.reachabilityStatus = AFNetworkReachabilityStatusUnknown;
+        
+        __unsafe_unretained CLVStarChatAPIClient *client = self;
+        self.reachabilityStatusChangeBlock = ^(AFNetworkReachabilityStatus status){
+            if (self.reachabilityStatus == status) {
+                return;
+            }
+            self.reachabilityStatus = status;
+            
+            if (!client.isAutoConnect) {
+                return;
+            }
+            
+            if (!client.userName) {
+                return;
+            }
+            
+            if (status != AFNetworkReachabilityStatusNotReachable) {
+                [client startUserStreamConnection];
+                if ([client.delegate respondsToSelector:@selector(userStreamClientDidAutoConnect:)]) {
+                    [client.delegate userStreamClientDidAutoConnect:client];
+                }
+            }
+        };
+    }
+    return self;
 }
 
 // GET /users/user_name
@@ -678,6 +753,134 @@ NSString *URLEncode(NSString *string);
 }
 
 #pragma mark -
+#pragma mark UserStream
+
+- (void)startUserStreamConnection
+{
+    if (self.connectionStatus == CLVStarChatUserStreamConnectionStatusConnecting ||
+        self.connectionStatus == CLVStarChatUserStreamConnectionStatusConnected) {
+        return;
+    }
+    
+    [self stopKeepConnectionTimer];
+    
+    [self connectUserStreamAPI];
+    self.keepConnectionTimer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                                target:self
+                                                              selector:@selector(checkPacketInterval)
+                                                              userInfo:nil
+                                                               repeats:YES];
+}
+
+- (void)stopUserStreamConnection
+{
+    if (self.connectionStatus != CLVStarChatUserStreamConnectionStatusConnecting &&
+        self.connectionStatus != CLVStarChatUserStreamConnectionStatusConnected) {
+        return;
+    }
+    
+    [self stopKeepConnectionTimer];
+    
+    if (_readStreamRef) {
+        CFReadStreamUnscheduleFromRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFReadStreamClose(_readStreamRef);
+        [self releaseReadStream];
+    }
+    
+    self.connectionStatus = CLVStarChatUserStreamConnectionStatusDisconnected;
+    if ([self.delegate respondsToSelector:@selector(userStreamClientDidDisconnected:)]) {
+        [self.delegate userStreamClientDidDisconnected:self];
+    }
+}
+
+- (void)releaseReadStream
+{
+    if (_readStreamRef) {
+        CFRelease(_readStreamRef);
+    }
+    _readStreamRef = NULL;
+}
+
+- (void)connectUserStreamAPI
+{
+    if (_readStreamRef) {
+        CFReadStreamUnscheduleFromRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+        CFReadStreamClose(_readStreamRef);
+        [self releaseReadStream];
+    }
+    
+    self.connectionStatus = CLVStarChatUserStreamConnectionStatusConnecting;
+    if ([self.delegate respondsToSelector:@selector(userStreamClientWillConnect:)]) {
+        [self.delegate userStreamClientWillConnect:self];
+    }
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"/users/%@/stream", self.userName] relativeToURL:self.baseURL];
+    CFURLRef urlRef = CFURLCreateWithString(kCFAllocatorDefault, (__bridge CFStringRef)[url absoluteString], NULL);
+    
+    CFHTTPMessageRef messageRef = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR("GET"), urlRef, kCFHTTPVersion1_1);
+    for (NSString *headerFieldName in self.defaultHeaders) {
+        CFHTTPMessageSetHeaderFieldValue(messageRef, (__bridge CFStringRef)headerFieldName, (__bridge CFStringRef)[self defaultValueForHeader:headerFieldName]);
+    }
+    CFHTTPMessageSetHeaderFieldValue(messageRef, CFSTR("Accept"), CFSTR("application/json"));
+    
+    _readStreamRef = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, messageRef);
+    CFStreamClientContext contextRef = {0, (__bridge void *)self, NULL, NULL, NULL};
+    
+    if (CFReadStreamSetClient(_readStreamRef,
+                              (kCFStreamEventOpenCompleted  |
+                               kCFStreamEventHasBytesAvailable |
+                               kCFStreamEventEndEncountered |
+                               kCFStreamEventErrorOccurred),
+                              &readHttpStreamCallBack,
+                              &contextRef)) {
+        CFReadStreamScheduleWithRunLoop(_readStreamRef, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+    }
+    CFReadStreamOpen(_readStreamRef);
+    
+    CFRelease(messageRef);
+    CFRelease(urlRef);
+}
+
+- (void)stopKeepConnectionTimer
+{
+    if ([self.keepConnectionTimer isValid]) {
+        [self.keepConnectionTimer invalidate];
+    }
+}
+
+- (void)checkPacketInterval
+{
+    time_t now = time(NULL);
+    
+    if (now > (self.lastPacketReceivedAt + kReconnectThreshold)) {
+        [self connectUserStreamAPI];
+    }
+}
+
+- (void)dealloc
+{
+    [self stopKeepConnectionTimer];
+    
+    if (_readStreamRef) {
+        CFRelease(_readStreamRef);
+    }
+}
+
+#pragma mark -
+#pragma mark SBJsonStreamParserAdapterDelegate Methods
+
+- (void)parser:(SBJsonStreamParser *)parser foundObject:(NSDictionary *)dict
+{
+    if ([self.delegate respondsToSelector:@selector(userStreamClient:didReceivedPacket:)]) {
+        [self.delegate userStreamClient:self didReceivedPacket:dict];
+    }
+}
+
+- (void)parser:(SBJsonStreamParser *)parser foundArray:(NSArray *)array
+{
+}
+
+#pragma mark -
 #pragma mark Private Methods
 
 - (void)messagesForPath:(NSString *)path
@@ -765,4 +968,73 @@ NSString *URLEncode(NSString *string) {
     CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, CFSTR (";,/?:@&=+$#"), kCFStringEncodingUTF8);
     
     return (__bridge NSString *)encodedString;
+}
+
+// CFNetwork CFReadStreamClientCallBack
+void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType, void *clientCallBackInfo) {
+    CLVStarChatAPIClient *client = (__bridge CLVStarChatAPIClient *)clientCallBackInfo;
+    
+    switch (eventType) {
+        case kCFStreamEventOpenCompleted:
+        {
+            client.lastPacketReceivedAt = time(NULL);
+            client.connectionStatus = CLVStarChatUserStreamConnectionStatusConnected;
+            
+            if ([client.delegate respondsToSelector:@selector(userStreamClientDidConnected:)]) {
+                [client.delegate userStreamClientDidConnected:client];
+            }
+            
+            break;
+        }
+        case kCFStreamEventHasBytesAvailable:
+        {
+            UInt8 buffer[kClientBufferSize];
+            CFIndex bytesRead = CFReadStreamRead(stream, buffer, sizeof(buffer));
+            
+            if (bytesRead > 0) {
+                client.lastPacketReceivedAt = time(NULL);
+                
+                NSData *data = [NSData dataWithBytes:buffer length:bytesRead];
+                [client.streamParser parse:data];
+            }
+            
+            break;
+        }
+        case kCFStreamEventEndEncountered:
+        {
+            client.connectionStatus = CLVStarChatUserStreamConnectionStatusDisconnected;
+            if ([client.delegate respondsToSelector:@selector(userStreamClientDidDisconnected:)]) {
+                [client.delegate userStreamClientDidDisconnected:client];
+            }
+            
+            CFReadStreamUnscheduleFromRunLoop(stream, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+            CFReadStreamClose(stream);
+            [client releaseReadStream];
+            [client stopKeepConnectionTimer];
+            
+            break;
+        }
+        case kCFStreamEventErrorOccurred:
+        {
+            CFErrorRef errorRef = CFReadStreamCopyError(stream);
+            CFDictionaryRef userInfoRef = CFErrorCopyUserInfo(errorRef);
+            NSError *error = [[NSError alloc] initWithDomain:(__bridge NSString *)CFErrorGetDomain(errorRef) code:CFErrorGetCode(errorRef) userInfo:(__bridge NSDictionary *)userInfoRef];
+            
+            CFRelease(userInfoRef);
+            CFRelease(errorRef);
+            
+            client.connectionStatus = CLVStarChatUserStreamConnectionStatusFailed;
+            if ([client.delegate respondsToSelector:@selector(userStreamClient:didFailWithError:)]) {
+                [client.delegate userStreamClient:client didFailWithError:error];
+            }
+            
+            CFReadStreamUnscheduleFromRunLoop(stream, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+            CFReadStreamClose(stream);
+            [client releaseReadStream];
+            [client stopKeepConnectionTimer];
+            
+            break;
+        }
+        default: ;
+    }
 }

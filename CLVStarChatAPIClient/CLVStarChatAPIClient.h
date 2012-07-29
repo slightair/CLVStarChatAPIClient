@@ -13,13 +13,34 @@
 #import "CLVStarChatChannelInfo.h"
 #import "CLVStarChatTopicInfo.h"
 #import "CLVStarChatMessageInfo.h"
+#import "SBJson.h"
 
 enum CLVStarChatAPIErrors {
     CLVStarChatAPIErrorUnexpectedResponse = 1000,
     CLVStarChatAPIErrorUnknown = -1
 };
 
-@interface CLVStarChatAPIClient : AFHTTPClient
+typedef enum {
+    CLVStarChatUserStreamConnectionStatusNone,
+    CLVStarChatUserStreamConnectionStatusConnecting,
+    CLVStarChatUserStreamConnectionStatusConnected,
+    CLVStarChatUserStreamConnectionStatusDisconnected,
+    CLVStarChatUserStreamConnectionStatusFailed
+} CLVStarChatUserStreamConnectionStatus;
+
+@class CLVStarChatAPIClient;
+
+@protocol CLVStarChatAPIClientDelegate <NSObject>
+- (void)userStreamClient:(CLVStarChatAPIClient *)client didReceivedPacket:(NSDictionary *)packet;
+@optional
+- (void)userStreamClientWillConnect:(CLVStarChatAPIClient *)client;
+- (void)userStreamClientDidConnected:(CLVStarChatAPIClient *)client;
+- (void)userStreamClientDidDisconnected:(CLVStarChatAPIClient *)client;
+- (void)userStreamClient:(CLVStarChatAPIClient *)client didFailWithError:(NSError *)error;
+- (void)userStreamClientDidAutoConnect:(CLVStarChatAPIClient *)client;
+@end
+
+@interface CLVStarChatAPIClient : AFHTTPClient <SBJsonStreamParserAdapterDelegate>
 
 typedef void (^CLVStarChatAPIBasicSuccessBlock)();
 typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
@@ -132,6 +153,13 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
 - (BOOL)leaveChannel:(NSString *)channelName
                error:(NSError **)error;
 
-@property (nonatomic, readonly, strong) NSString *userName;
+// UserStream
+- (void)startUserStreamConnection;
+- (void)stopUserStreamConnection;
+
+@property (nonatomic, weak) id <CLVStarChatAPIClientDelegate> delegate;
+@property (nonatomic, strong, readonly) NSString *userName;
+@property (nonatomic, assign, readonly) CLVStarChatUserStreamConnectionStatus connectionStatus;
+@property BOOL isAutoConnect;
 
 @end
