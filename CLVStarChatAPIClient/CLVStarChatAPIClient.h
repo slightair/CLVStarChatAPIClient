@@ -157,7 +157,7 @@ typedef void (^CLVStarChatAPIBasicFailureBlock)(NSError *error);
 - (void)startUserStreamConnection;
 - (void)stopUserStreamConnection;
 
-@property (nonatomic, weak) id <CLVStarChatAPIClientDelegate> delegate;
+@property (nonatomic, assign) id <CLVStarChatAPIClientDelegate> delegate;
 @property (nonatomic, strong, readonly) NSString *userName;
 @property (nonatomic, assign, readonly) CLVStarChatUserStreamConnectionStatus connectionStatus;
 @property BOOL isAutoConnect;
