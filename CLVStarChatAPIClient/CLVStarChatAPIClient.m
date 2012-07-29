@@ -84,9 +84,6 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         
         __unsafe_unretained CLVStarChatAPIClient *client = self;
         self.reachabilityStatusChangeBlock = ^(AFNetworkReachabilityStatus status){
-            if (self.reachabilityStatus == status) {
-                return;
-            }
             self.reachabilityStatus = status;
             
             if (!client.isAutoConnect) {
@@ -759,10 +756,11 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 {
     if (self.connectionStatus == CLVStarChatUserStreamConnectionStatusConnecting ||
         self.connectionStatus == CLVStarChatUserStreamConnectionStatusConnected) {
-        return;
+        [self stopUserStreamConnection];
     }
-    
-    [self stopKeepConnectionTimer];
+    else {
+        [self stopKeepConnectionTimer];
+    }
     
     [self connectUserStreamAPI];
     self.keepConnectionTimer = [NSTimer scheduledTimerWithTimeInterval:1
