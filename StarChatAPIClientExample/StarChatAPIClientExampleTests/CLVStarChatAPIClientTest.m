@@ -115,6 +115,7 @@
     
     GHAssertNil(userInfo, @"userInfo should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // PUT /users/user_name
@@ -206,6 +207,7 @@
     
     GHAssertFalse(result, @"result should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /users/user_name/ping
@@ -258,6 +260,7 @@
     
     GHAssertFalse(result, @"result should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /users/user_name/channels
@@ -330,6 +333,7 @@
     
     GHAssertNil(subscribedChannels, @"subscribedChannels should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /channels/channel_name
@@ -391,6 +395,7 @@
     
     GHAssertNil(channelInfo, @"channelInfo should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // PUT /channels/channel_name
@@ -479,6 +484,7 @@
     
     GHAssertFalse(result, @"error should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /channels/channel_name/users
@@ -550,6 +556,7 @@
     
     GHAssertNil(hahihuhehoUsers, @"hahihuhehoUsers should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /channels/channel_name/messages/recent
@@ -631,6 +638,7 @@
     
     GHAssertNil(testMessages, @"testMessages should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // GET /channels/channel_name/messages/by_time_span/start_time,end_time
@@ -720,6 +728,7 @@
     
     GHAssertNil(testMessages, @"testMessages should be nil");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // POST /channels/channel_name/messages
@@ -813,6 +822,7 @@
     
     GHAssertFalse(result, @"result should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // PUT /subscribings?user_name=user_name;channel_name=channel_name
@@ -865,6 +875,7 @@
     
     GHAssertFalse(result, @"result should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 // DELETE /subscribings?user_name=user_name;channel_name=channel_name
@@ -917,6 +928,7 @@
     
     GHAssertFalse(result, @"result should be NO");
     GHAssertNotNil(error, @"error should not be nil");
+    GHAssertNotNil([error.userInfo objectForKey:CLVStarChatAPIClientResponseKey], @"error.userInfo should have response");
 }
 
 @end
