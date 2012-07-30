@@ -15,6 +15,8 @@
 #import "CLVStarChatMessageInfo.h"
 #import "SBJson.h"
 
+#define CLVStarChatAPIClientResponseKey @"CLVStarChatAPIClientResponseKey"
+
 enum CLVStarChatAPIErrors {
     CLVStarChatAPIErrorUnexpectedResponse = 1000,
     CLVStarChatAPIErrorUnknown = -1

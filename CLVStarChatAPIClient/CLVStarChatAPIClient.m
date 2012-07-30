@@ -148,8 +148,11 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil
+                                               ]];
         }
         return nil;
     }
@@ -212,8 +215,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -265,8 +270,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -326,8 +333,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return nil;
     }
@@ -386,8 +395,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return nil;
     }
@@ -452,8 +463,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -515,8 +528,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return nil;
     }
@@ -636,8 +651,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -688,8 +705,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -740,8 +759,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return NO;
     }
@@ -934,8 +955,10 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
         if (error) {
             *error = [NSError errorWithDomain:CLVStarChatAPIErrorDomain
                                          code:NSURLErrorBadServerResponse
-                                     userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode]
-                                                                          forKey:NSLocalizedDescriptionKey]];
+                                     userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:@"Unexpected HTTP status code %d", statusCode], NSLocalizedDescriptionKey,
+                                               response, CLVStarChatAPIClientResponseKey,
+                                               nil]];
         }
         return nil;
     }
