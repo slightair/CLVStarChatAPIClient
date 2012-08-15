@@ -572,7 +572,7 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
                 completion:(void (^)(NSArray *messages))completion
                    failure:(CLVStarChatAPIBasicFailureBlock)failure
 {
-    [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%ld,%ld", URLEncode(channelName), startTime, endTime]
+    [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%d,%d", URLEncode(channelName), startTime, endTime]
                completion:completion
                   failure:failure];
 }
@@ -582,7 +582,7 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
                         endTime:(NSInteger)endTime
                           error:(NSError **)error
 {
-    return [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%ld,%ld", URLEncode(channelName), startTime, endTime]
+    return [self messagesForPath:[NSString stringWithFormat:@"/channels/%@/messages/by_time_span/%d,%d", URLEncode(channelName), startTime, endTime]
                            error:error];
 }
 
@@ -988,7 +988,7 @@ void readHttpStreamCallBack(CFReadStreamRef stream, CFStreamEventType eventType,
 NSString *URLEncode(NSString *string) {
     CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, CFSTR (";,/?:@&=+$#"), kCFStringEncodingUTF8);
     
-    return (__bridge NSString *)encodedString;
+    return (__bridge_transfer NSString *)encodedString;
 }
 
 // CFNetwork CFReadStreamClientCallBack
